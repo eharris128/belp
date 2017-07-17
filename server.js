@@ -62,7 +62,7 @@ app.get('/restaurants/:id', (req, res) => {
         res.status(500).json({message: 'Internal server error'})
     });
 });
-
+// makes another comment
 
 app.post('/restaurants', (req, res) => {
 
