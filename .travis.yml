@@ -6,6 +6,6 @@ deploy:
   provider: heroku
   api_key:
     secure: sA8dOBBI/1psI+MaoPeXWvp2ZVL5gtQKHeC85oBTd2DlptMYt4Fy6/glM/DH6G3Jf2V4jlkm0vbR78jaB19QpX68s2uQvyyOIb2weJbUKpMFpwG+dy4R9mE+WQqqwnTa8gSYqsXonRBOhobeUvR6mhRp7rBeoaGhbUo20WIDHHaeWG99j+rLOX1kedese7uGwrXp/4irn4G/NR7zFp+hO3rNIX7GGWNdmYWG9vT/t1Vm7Aprf4YiEIPndKQ0xnIkV3EZij5Vjf+pL64S+Io+XrlxUX4OiAaDU+soblkx1Zp0KXyhMXwXwOCKYI3WSwkggfi3+7xkb3dFKjNXan1RzihgVRoe+i3/gwLDe3RxI5iOGFtVme1AWA09VIbtmneq8u+/6z0Iy+MnT+U6vVzHirO7barq+GV3/i+/qXB3Qm0cGW+ZEp3PZ+irODk+rfffBRCIkJpLsGpp3cMpwfWhCY3wHebXgk/u/SAgnHyOUcgYG4sipn7eIZSFAdxcmAM/8BMQ37zOiBOT3jrDGntV49mNBk+2pgvnEsYASp3l46EdcYLwUbCBLstvvMBIuY5wqYmkWGj2t2CQRdr4vfh6aKt/A71A/120yb8lUVpMG73OwV1YTCYvGZcBEvmcwZZsE8PVAXuPW6r5N/LkWMPOle2YUGALlHcp9EGeQvToBC0=
-  app:  beer-app
+  app:  boiling-refuge-95989
   on:
     repo: 52lions06/beer-app
