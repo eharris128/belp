@@ -19,6 +19,10 @@ app.use(express.static(__dirname + '/public'));
 
 
 
+app.get('/', (req, res) => {
+  res.sendFile('index.html');
+})
+
 // GET requests to /restaurants => return 10 restaurants
 app.get('/restaurants', (req, res) => {
   Restaurant
