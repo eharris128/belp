@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+// Use faker to populate our database with beer data
+// Follow the format of the test database
+
+
 // this is our schema to represent a restaurant
 const restaurantSchema = mongoose.Schema({
   name: {type: String, required: true},
@@ -51,6 +55,9 @@ restaurantSchema.methods.apiRepr = function() {
 
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
+
+// const Beer = mongoose.model('Beer', beerSchema);
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 
+// module.export = {Beer};
 module.exports = {Restaurant};

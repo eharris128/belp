@@ -11,13 +11,16 @@ mongoose.Promise = global.Promise;
 // config.js is where we control constants for entire
 // app like PORT and DATABASE_URL
 const {PORT, DATABASE_URL} = require('./config');
+//const {Beer} = require('./models');
 const {Restaurant} = require('./models');
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-
+// Bring in our strategy (reference passport repo) 
+// Make sure to create mongoose model, schema, methods for User within 
+// models.js
 
 app.get('/', (req, res) => {
   res.sendFile('index.html');
