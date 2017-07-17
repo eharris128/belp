@@ -48,6 +48,7 @@ app.get('/restaurants', (req, res) => {
     });
 });
 
+// make a comment after class
 // can also request by ID
 app.get('/restaurants/:id', (req, res) => {
   Restaurant
@@ -61,7 +62,7 @@ app.get('/restaurants/:id', (req, res) => {
         res.status(500).json({message: 'Internal server error'})
     });
 });
-
+// makes another comment
 
 app.post('/restaurants', (req, res) => {
 
