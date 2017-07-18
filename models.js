@@ -7,7 +7,7 @@ const beerSchema = mongoose.Schema({
   style: String,
   description: {type: String, required: true},
   brewery: String,
-  ibu: Number
+  ibu: Number,
   // {
   //   building: String,
   //   // coord will be an array of string values
@@ -16,9 +16,9 @@ const beerSchema = mongoose.Schema({
   //   zipcode: String
   // },
   // grades will be an array of objects
-  reviews: [{
+  review: [{
     date: Date,
-    grade: String,
+    comment: String,
     score: Number
   }]
 });
@@ -32,9 +32,9 @@ beerSchema.virtual('addressString').get(function() {
   return `${this.address.building} ${this.address.street}`.trim()});
 
 // this virtual grabs the most recent grade for a restaurant.
-beerSchema.virtual('grade').get(function() {
-  const gradeObj = this.grades.sort((a, b) => {return b.date - a.date})[0] || {};
-  return gradeObj.grade;
+beerSchema.virtual('review').get(function() {
+  const reviewObj = this.reviews.sort((a, b) => {return b.date - a.date})[0] || {};
+  return reviewObj.review;
 });
 
 // this is an *instance method* which will be available on all instances
@@ -45,12 +45,14 @@ beerSchema.methods.apiRepr = function() {
   return {
     id: this._id,
     name: this.name,
-    cuisine: this.cuisine,
-    borough: this.borough,
-    grade: this.grade,
-    address: this.addressString
+    style: this.style,
+    description: this.description,
+    review: this.review,
+    brewery: this.brewery,
+    ibu:this.ibu
   };
-}
+};
+
 
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
