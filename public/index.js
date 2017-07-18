@@ -25,17 +25,34 @@ function updatesStateBeerData(MOCK_BEER_DATA) {
 
 // Render Functions
 function stateRender(state) {
-  console.log(state.beerData.Name);
+  const { beerData } = state;
+  console.log(beerData.Reviews[0]);
   let stateRenderTemplate = (`
-    <h2> Beer Name: ${state.beerData.Name}</h2`);
+    <h2> Beer Name: ${beerData.Name}</h2
+    <p> Style: ${beerData.Style}</p>
+    <p> ABV: ${beerData.ABV}</p>
+    <p> IBU: ${beerData.IBU}</p>
+    <p> Description: ${beerData.Description}</p>
+    <p> Brewery: ${beerData.Brewery}</p>
+    <p> Reviews: ${beerData.Reviews}</p>
+    `);
   $('.js-results').removeClass('hidden');
+  $('.js-results').html(stateRenderTemplate);
 }
+
 // Data Retrieval functions
 // Retrieve Data from DB
 // Send JSON from DB to render functions and other functions that need it
 
 function getApiData(beerName) {
   // return fetch (`our Url endpoint here`)
+  fetch('/beer')
+    .then(res => {
+      return res.json();
+    })
+    .then(data => {
+
+    });
   //.then
   updatesStateBeerData(MOCK_BEER_DATA);
   stateRender(appState);
