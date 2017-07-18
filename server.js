@@ -149,7 +149,7 @@ app.get('/beer', (req, res) => {
 
 // make a comment after class
 // can also request by ID
-app.get('/restaurants/:id', (req, res) => {
+app.get('/beers/:id', (req, res) => {
   Beer
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
@@ -162,7 +162,7 @@ app.get('/restaurants/:id', (req, res) => {
     });
 });
 
-app.post('/restaurants', (req, res) => {
+app.post('/beers', (req, res) => {
 
   const requiredFields = ['name', 'borough', 'cuisine'];
   for (let i=0; i<requiredFields.length; i++) {
