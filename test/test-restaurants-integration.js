@@ -26,42 +26,53 @@ function seedBeerData() {
 }
 
 // used to generate data to put in db
-function generateBoroughName() {
-  const boroughs = [
-    'Manhattan', 'Queens', 'Brooklyn', 'Bronx', 'Staten Island'];
-  return boroughs[Math.floor(Math.random() * boroughs.length)];
-}
+
+// function generateStyleName() {
+//   const styles = [
+//     // 'Manhattan', 'Queens', 'Brooklyn', 'Bronx', 'Staten Island'
+//     ];  //////////
+//   return styles[Math.floor(Math.random() * styles.length)];
+// }
 
 // used to generate data to put in db
-function generateCuisineType() {
-  const cuisines = ['Italian', 'Thai', 'Colombian'];
-  return cuisines[Math.floor(Math.random() * cuisines.length)];
-}
+
+// function generateCuisineType() {
+//   const cuisines = ['Italian', 'Thai', 'Colombian'];
+//   return cuisines[Math.floor(Math.random() * cuisines.length)];
+// }
 
 // used to generate data to put in db
-function generateGrade() {
-  const grades = ['A', 'B', 'C', 'D', 'F'];
-  const grade = grades[Math.floor(Math.random() * grades.length)];
-  return {
-    date: faker.date.past(),
-    grade: grade
-  };
-}
+
+// function generateGrade() {
+//   const grades = ['A', 'B', 'C', 'D', 'F'];
+//   const grade = grades[Math.floor(Math.random() * grades.length)];
+//   return {
+//     date: faker.date.past(),
+//     grade: grade
+//   };
+// }
 
 // generate an object represnting a restaurant.
 // can be used to generate seed data for db
 // or request.body data
 function generateBeerData() {
   return {
-    name: faker.company.companyName(),
-    borough: generateBoroughName(),
-    cuisine: generateCuisineType(),
-    address: {
-      building: faker.address.streetAddress(),
-      street: faker.address.streetName(),
-      zipcode: faker.address.zipCode()
-    },
-    grades: [generateGrade(), generateGrade(), generateGrade()]
+    name: faker.beer.name(),
+    abv: faker.beer.alcohol(),
+    style: faker.beer.style(),
+    description: faker.lorem.sentences(),
+    brewery: faker.lorem.sentence(),
+    ibu: faker.beer.ibu,
+    reviews: faker.lorem.paragraphs()
+    // name: faker::beer.name(),
+    // abv: Faker::Beer.style(),
+    // style: generateCuisineType(),
+    // description: {
+    //   building: faker.address.streetAddress(),
+    //   street: faker.address.streetName(),
+    //   zipcode: faker.address.zipCode()
+    // },
+    // grades: [generateGrade(), generateGrade(), generateGrade()]
   };
 }
 
@@ -139,7 +150,7 @@ describe('Beer API resource', function() {
           res.body.beers.forEach(function(beer) {
             beer.should.be.a('object');
             beer.should.include.keys(
-              'id', 'name', 'cuisine', 'borough', 'grade', 'address');
+              'id', 'name', 'abv', 'style', 'description', 'brewery', 'ibu');
           });
           resBeer = res.body.beers[0];
           return Beer.findById(resBeer.id);
@@ -148,11 +159,15 @@ describe('Beer API resource', function() {
 
           resBeer.id.should.equal(beer.id);
           resBeer.name.should.equal(beer.name);
-          resBeer.cuisine.should.equal(beer.cuisine);
-          resBeer.borough.should.equal(beer.borough);
-          resBeer.address.should.contain(beer.address.building);
+          resBeer.style.should.equal(beer.style);
+          resBeer.description.should.equal(beer.description);
+          resBeer.abv.should.equal(beer.abv);
+          resBeer.brewery.should.equal(beer.brewery);
+          resBeer.ibu.should.equal(beer.ibu);
+          resBeer.reviews.should.equal(beer.reviews);
+          // resBeer.address.should.contain(beer.address.building);
 
-          resBeer.grade.should.equal(beer.grade);
+          // resBeer.grade.should.equal(beer.grade);
         });
     });
   });
@@ -175,27 +190,27 @@ describe('Beer API resource', function() {
           res.should.be.json;
           res.body.should.be.a('object');
           res.body.should.include.keys(
-            'id', 'name', 'cuisine', 'borough', 'grade', 'address');
+            'id', 'name', 'style', 'description', 'reviews', 'brewery', 'ibu');
           res.body.name.should.equal(newBeer.name);
           // cause Mongo should have created id on insertion
           res.body.id.should.not.be.null;
-          res.body.cuisine.should.equal(newBeer.cuisine);
-          res.body.borough.should.equal(newBeer.borough);
+          res.body.style.should.equal(newBeer.style);
+          res.body.description.should.equal(newBeer.description);
 
-          mostRecentGrade = newBeer.grades.sort(
-            (a, b) => b.date - a.date)[0].grade;
+          mostRecentReview = newBeer.reviews.sort(
+            (a, b) => b.date - a.date)[0].review;
 
-          res.body.grade.should.equal(mostRecentGrade);
+          res.body.review.should.equal(mostRecentReview);
           return Beer.findById(res.body.id);
         })
         .then(function(beer) {
           beer.name.should.equal(newBeer.name);
-          beer.cuisine.should.equal(newBeer.cuisine);
-          beer.borough.should.equal(newBeer.borough);
-          beer.grade.should.equal(mostRecentGrade);
-          beer.address.building.should.equal(newBeer.address.building);
-          beer.address.street.should.equal(newBeer.address.street);
-          beer.address.zipcode.should.equal(newBeer.address.zipcode);
+          beer.style.should.equal(newBeer.style);
+          beer.description.should.equal(newBeer.description);
+          beer.reviews.should.equal(mostRecentReview);
+          beer.brewery.should.equal(newBeer.brewery);
+          beer.ibu.should.equal(newBeer.ibu);
+          // beer.address.zipcode.should.equal(newBeer.address.zipcode);
         });
     });
 
@@ -231,7 +246,7 @@ describe('Beer API resource', function() {
     it('should update fields you send over', function() {
       const updateData = {
         name: 'fofofofofofofof',
-        cuisine: 'futuristic fusion'
+        style: 'futuristic fusion'
       };
 
       return Beer
@@ -253,7 +268,7 @@ describe('Beer API resource', function() {
         })
         .then(function(beer) {
           beer.name.should.equal(updateData.name);
-          beer.cuisine.should.equal(updateData.cuisine);
+          beer.style.should.equal(updateData.style);
         });
     });
   });
