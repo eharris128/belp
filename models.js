@@ -1,3 +1,5 @@
+'use strict';
+
 const mongoose = require('mongoose');
 
 // this is our schema to represent a restaurant
@@ -16,10 +18,10 @@ const beerSchema = mongoose.Schema({
   //   zipcode: String
   // },
   // grades will be an array of objects
-  review: [{
+  reviews: [{
     date: Date,
-    comment: String,
-    score: Number
+    comment: String
+    // score: Number
   }]
 });
 
@@ -28,12 +30,13 @@ const beerSchema = mongoose.Schema({
 // properties that are stored in the database. Here we use it
 // to generate a human readable string based on the address object
 // we're storing in Mongo.
-beerSchema.virtual('addressString').get(function() {
-  return `${this.address.building} ${this.address.street}`.trim()});
+
+// beerSchema.virtual('').get(function() {
+//   return `${this.address.building} ${this.address.street}`.trim();});
 
 // this virtual grabs the most recent grade for a restaurant.
 beerSchema.virtual('review').get(function() {
-  const reviewObj = this.reviews.sort((a, b) => {return b.date - a.date})[0] || {};
+  const reviewObj = this.reviews.sort((a, b) => {return b.date - a.date;})[0] || {};
   return reviewObj.review;
 });
 
@@ -47,7 +50,7 @@ beerSchema.methods.apiRepr = function() {
     name: this.name,
     style: this.style,
     description: this.description,
-    review: this.review,
+    reviews: this.reviews,
     brewery: this.brewery,
     ibu:this.ibu
   };
