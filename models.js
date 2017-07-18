@@ -19,6 +19,7 @@ const beerSchema = mongoose.Schema({
   // },
   // grades will be an array of objects
   reviews: [{
+    // userID: { type: mongoose.Schema.Types.ObjectId},
     date: Date,
     comment: String
     // score: Number
@@ -48,6 +49,7 @@ beerSchema.methods.apiRepr = function() {
   return {
     id: this._id,
     name: this.name,
+    abv: this.abv,
     style: this.style,
     description: this.description,
     reviews: this.reviews,

@@ -158,13 +158,13 @@ app.get('/beers/:id', (req, res) => {
     .then(beer =>res.json(beer.apiRepr()))
     .catch(err => {
       console.error(err);
-        res.status(500).json({message: 'Internal server error'})
+      res.status(500).json({message: 'Internal server error'})
     });
 });
 
 app.post('/beers', (req, res) => {
 
-  const requiredFields = ['name', 'borough', 'cuisine'];
+  const requiredFields = ['name', 'style', 'abv', 'description', 'reviews', 'brewery', 'ibu', ];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -206,7 +206,7 @@ app.put('/beers/:id', (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = ['name', 'borough', 'cuisine', 'address'];
+  const updateableFields = ['name', 'style', 'description', 'reviews', 'brewery', 'ibu'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
