@@ -45,12 +45,23 @@ function stateRender(state) {
 // Send JSON from DB to render functions and other functions that need it
 
 function getApiData(beerName) {
+  console.log(beerName);
   // return fetch (`our Url endpoint here`)
-  fetch('/beer')
+  fetch('/beers')
     .then(res => {
       return res.json();
     })
     .then(data => {
+      console.log(data);
+      console.log(data.beers[0].name);
+      for (let i = 0; i < data.beers.length; i++) {
+        let currentBeer = data.beers[i].name;
+        if (currentBeer === beerName) {
+          console.log('Wahoo');
+        } else {
+          console.log('suh sad');
+        }
+      }
 
     });
   //.then
