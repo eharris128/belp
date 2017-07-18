@@ -57,13 +57,20 @@ function seedBeerData() {
 // or request.body data
 function generateBeerData() {
   return {
-    name: faker.beer.name(),
-    abv: faker.beer.alcohol(),
-    style: faker.beer.style(),
+    name: faker.name.firstName(),
+    abv: faker.random.number(),
+    style: faker.lorem.sentences(),
     description: faker.lorem.sentences(),
     brewery: faker.lorem.sentence(),
-    ibu: faker.beer.ibu,
-    reviews: faker.lorem.paragraphs()
+    ibu: faker.random.number(),
+    reviews: [{
+        date: faker.date.recent(),
+        content: faker.lorem.paragraphs()},
+        
+        {
+        date: faker.date.recent(),
+        content: faker.lorem.paragraphs()}
+        ]
     // name: faker::beer.name(),
     // abv: Faker::Beer.style(),
     // style: generateCuisineType(),
@@ -197,10 +204,11 @@ describe('Beer API resource', function() {
           res.body.style.should.equal(newBeer.style);
           res.body.description.should.equal(newBeer.description);
 
-          mostRecentReview = newBeer.reviews.sort(
-            (a, b) => b.date - a.date)[0].review;
-
-          res.body.review.should.equal(mostRecentReview);
+          console.log(newBeer.reviews);
+          let mostRecentReview = newBeer.reviews.sort(
+            (a, b) => b.date - a.date)[0].reviews;
+            
+          res.body.reviews.should.equal(mostRecentReview);
           return Beer.findById(res.body.id);
         })
         .then(function(beer) {
@@ -214,7 +222,7 @@ describe('Beer API resource', function() {
         });
     });
 
-    it.only('should add new user', function (){
+    it('should add new user', function (){
       const myTestUser = {
         username: faker.internet.userName(),
         password: '$2a$10$AmPJwn7FES9mV3ygK1DmvOlVHuO1oPg9idgYqXzTMjewvtp9goZF2',
