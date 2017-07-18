@@ -123,7 +123,7 @@ app.get('/', (req, res) => {
 });
 
 // GET requests to /restaurants => return 10 restaurants
-app.get('/beer', (req, res) => {
+app.get('/beers', (req, res) => {
   Beer
     .find()
     // we're limiting because restaurants db has > 25,000
