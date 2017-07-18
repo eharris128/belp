@@ -3,6 +3,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const {BasicStrategy} = require('passport-http');
+const morgan = require('morgan');
 
 // Mongoose internally uses a promise-like object,
 // but its better to make Mongoose use built in es6 promises
@@ -11,16 +14,85 @@ mongoose.Promise = global.Promise;
 // config.js is where we control constants for entire
 // app like PORT and DATABASE_URL
 const {PORT, DATABASE_URL} = require('./config');
-//const {Beer} = require('./models');
-const {Restaurant} = require('./models');
+
+//const {Beer, User} = require('./models'); This line will replace the following line 
+//after setting up Beer database 
+const {Restaurant, User} = require('./models');
 
 const app = express();
+
+app.use(morgan('common'));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
-// Bring in our strategy (reference passport repo) 
-// Make sure to create mongoose model, schema, methods for User within 
-// models.js
+// User and authorization related functions
+const strategy = new BasicStrategy(function(username, password, callback) {
+  let user;
+  User
+    .findOne({username: username})
+    .exec()
+    .then(_user => {
+      user = _user;
+      if (!user) {
+        return callback(null, false, {message: 'Incorrect username'});
+      }
+      return user.validatePassword(password);
+    })
+    .then(isValid => {
+      if (!isValid) {
+        return callback(null, false, {message: 'Incorrect password'});
+      }
+      else {
+        return callback(null, user);
+      }
+    });
+});
+
+passport.use(strategy);
+
+app.post('/users', (req, res) => {
+  const requiredFields = ['username', 'password', 'firstName', 'lastName'];
+
+  const missingIndex = requiredFields.findIndex(field => !req.body[field]);
+  if (missingIndex !== -1) {
+    return res.status(400).json({
+      message: `Missing field: ${requiredFields[missingIndex]}`
+    });
+  }
+
+  let {username, password, firstName, lastName} = req.body;
+
+  username = username.trim();
+  password = password.trim();
+
+  // check for existing user
+  return User
+    .find({username})
+    .count()
+    .exec()
+    .then(count => {
+      if (count > 0) {
+        return res.status(422).json({message: 'username already taken'});
+      }
+      // if no existing user, hash password
+      return User.hashPassword(password);
+    })
+    .then(hash => {
+      return User
+        .create({
+          username,
+          password: hash,
+          firstName,
+          lastName
+        });
+    })
+    .then(user => {
+      return res.status(201).json(user.apiRepr());
+    })
+    .catch(err => {
+      res.status(500).json({message: 'Internal server error'});
+    });
+});
 
 app.get('/', (req, res) => {
   res.sendFile('index.html');
@@ -48,7 +120,7 @@ app.get('/restaurants', (req, res) => {
       err => {
         console.error(err);
         res.status(500).json({message: 'Internal server error'});
-    });
+      });
 });
 // test comment
 
