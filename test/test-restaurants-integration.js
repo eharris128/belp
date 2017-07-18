@@ -1,23 +1,19 @@
+'use strict';
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
-// this makes the should syntax available throughout
-// this module
 const should = chai.should();
 
+//const {Beer} = require('../models');
 const {Restaurant} = require('../models');
 const {app, runServer, closeServer} = require('../server');
 const {TEST_DATABASE_URL} = require('../config');
 
 chai.use(chaiHttp);
 
-// used to put randomish documents in db
-// so we have data to work with and assert about.
-// we use the Faker library to automatically
-// generate placeholder values for author, title, content
-// and then we insert that data into mongo
 function seedRestaurantData() {
   console.info('seeding restaurant data');
   const seedData = [];
@@ -49,7 +45,7 @@ function generateGrade() {
   return {
     date: faker.date.past(),
     grade: grade
-  }
+  };
 }
 
 // generate an object represnting a restaurant.
@@ -66,7 +62,7 @@ function generateRestaurantData() {
       zipcode: faker.address.zipCode()
     },
     grades: [generateGrade(), generateGrade(), generateGrade()]
-  }
+  };
 }
 
 
@@ -75,16 +71,12 @@ function generateRestaurantData() {
 // to ensure  ata from one test does not stick
 // around for next one
 function tearDownDb() {
-    console.warn('Deleting database');
-    return mongoose.connection.dropDatabase();
+  console.warn('Deleting database');
+  return mongoose.connection.dropDatabase();
 }
 
-describe('Restaurants API resource', function() {
+describe('Beer API resource', function() {
 
-  // we need each of these hook functions to return a promise
-  // otherwise we'd need to call a `done` callback. `runServer`,
-  // `seedRestaurantData` and `tearDownDb` each return a promise,
-  // so we return the value returned by these function calls.
   before(function() {
     return runServer(TEST_DATABASE_URL);
   });
@@ -99,7 +91,7 @@ describe('Restaurants API resource', function() {
 
   after(function() {
     return closeServer();
-  })
+  });
 
   // note the use of nested `describe` blocks.
   // this allows us to make clearer, more discrete tests that focus
@@ -206,6 +198,27 @@ describe('Restaurants API resource', function() {
           restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
         });
     });
+
+    it.only('should add new user', function (){
+      const myTestUser = {
+        username: faker.internet.userName(),
+        password: '$2a$10$AmPJwn7FES9mV3ygK1DmvOlVHuO1oPg9idgYqXzTMjewvtp9goZF2',
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName()
+      };
+      return chai.request(app)
+        .post('/users')
+        .send(myTestUser)
+        .then(function(res){
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.include.keys(
+            'username', 'firstName', 'lastName');  
+          res.body.username.should.equal(myTestUser.username);
+          res.body.firstName.should.equal(myTestUser.firstName);
+          res.body.lastName.should.equal(myTestUser.lastName);
+        }).then();
+    });
   });
 
   describe('PUT endpoint', function() {
@@ -242,7 +255,7 @@ describe('Restaurants API resource', function() {
           restaurant.name.should.equal(updateData.name);
           restaurant.cuisine.should.equal(updateData.cuisine);
         });
-      });
+    });
   });
 
   describe('DELETE endpoint', function() {
