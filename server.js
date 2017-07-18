@@ -17,7 +17,7 @@ const {PORT, DATABASE_URL} = require('./config');
 
 //const {Beer, User} = require('./models'); This line will replace the following line 
 //after setting up Beer database 
-const {Restaurant, User} = require('./models');
+const {Beer, User} = require('./models');
 
 const app = express();
 
@@ -123,8 +123,8 @@ app.get('/', (req, res) => {
 });
 
 // GET requests to /restaurants => return 10 restaurants
-app.get('/restaurants', (req, res) => {
-  Restaurant
+app.get('/beers', (req, res) => {
+  Beer
     .find()
     // we're limiting because restaurants db has > 25,000
     // documents, and that's too much to process/return
@@ -134,10 +134,10 @@ app.get('/restaurants', (req, res) => {
     // success callback: for each restaurant we got back, we'll
     // call the `.apiRepr` instance method we've created in
     // models.js in order to only expose the data we want the API return.
-    .then(restaurants => {
+    .then(beers => {
       res.json({
-        restaurants: restaurants.map(
-          (restaurant) => restaurant.apiRepr())
+        beers: beers.map(
+          (beer) => beer.apiRepr())
       });
     })
     .catch(
@@ -149,40 +149,42 @@ app.get('/restaurants', (req, res) => {
 
 // make a comment after class
 // can also request by ID
-app.get('/restaurants/:id', (req, res) => {
-  Restaurant
+app.get('/beers/:id', (req, res) => {
+  Beer
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)
     .exec()
-    .then(restaurant =>res.json(restaurant.apiRepr()))
+    .then(beer =>res.json(beer.apiRepr()))
     .catch(err => {
       console.error(err);
-        res.status(500).json({message: 'Internal server error'})
+      res.status(500).json({message: 'Internal server error'});
     });
 });
 
-app.post('/restaurants', (req, res) => {
+app.post('/beers', (req, res) => {
 
-  const requiredFields = ['name', 'borough', 'cuisine'];
+  const requiredFields = ['name', 'style', 'abv', 'description', 'reviews', 'brewery', 'ibu', ];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
+      const message = `Missing \`${field}\` in request body`;
       console.error(message);
       return res.status(400).send(message);
     }
   }
 
-  Restaurant
+  Beer
     .create({
       name: req.body.name,
-      borough: req.body.borough,
-      cuisine: req.body.cuisine,
-      grades: req.body.grades,
-      address: req.body.address})
+      abv: req.body.abv,
+      style: req.body.style,
+      reviews: req.body.reviews,
+      brewery: req.body.brewery,
+      ibu: req.body.ibu,
+      description: req.body.description})
     .then(
-      restaurant => res.status(201).json(restaurant.apiRepr()))
+      beer => res.status(201).json(beer.apiRepr()))
     .catch(err => {
       console.error(err);
       res.status(500).json({message: 'Internal server error'});
@@ -190,7 +192,7 @@ app.post('/restaurants', (req, res) => {
 });
 
 
-app.put('/restaurants/:id', (req, res) => {
+app.put('/beers/:id', (req, res) => {
   // ensure that the id in the request path and the one in request body match
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message = (
@@ -204,7 +206,7 @@ app.put('/restaurants/:id', (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = ['name', 'borough', 'cuisine', 'address'];
+  const updateableFields = ['name', 'style', 'description', 'reviews', 'brewery', 'ibu'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -212,19 +214,19 @@ app.put('/restaurants/:id', (req, res) => {
     }
   });
 
-  Restaurant
+  Beer
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
     .findByIdAndUpdate(req.params.id, {$set: toUpdate})
     .exec()
-    .then(restaurant => res.status(204).end())
+    .then(beer => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
-app.delete('/restaurants/:id', (req, res) => {
-  Restaurant
+app.delete('/beers/:id', (req, res) => {
+  Beer
     .findByIdAndRemove(req.params.id)
     .exec()
-    .then(restaurant => res.status(204).end())
+    .then(beer => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
@@ -250,10 +252,10 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
         console.log(`Your app is listening on port ${port}`);
         resolve();
       })
-      .on('error', err => {
-        mongoose.disconnect();
-        reject(err);
-      });
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
     });
   });
 }
@@ -262,15 +264,15 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
 // use it in our integration tests later.
 function closeServer() {
   return mongoose.disconnect().then(() => {
-     return new Promise((resolve, reject) => {
-       console.log('Closing server');
-       server.close(err => {
-           if (err) {
-               return reject(err);
-           }
-           resolve();
-       });
-     });
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
   });
 }
 
@@ -278,6 +280,6 @@ function closeServer() {
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
   runServer().catch(err => console.error(err));
-};
+}
 
 module.exports = {app, runServer, closeServer};

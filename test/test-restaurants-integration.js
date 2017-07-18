@@ -8,21 +8,21 @@ const mongoose = require('mongoose');
 const should = chai.should();
 
 //const {Beer} = require('../models');
-const {Restaurant} = require('../models');
+const {Beer} = require('../models');
 const {app, runServer, closeServer} = require('../server');
 const {TEST_DATABASE_URL} = require('../config');
 
 chai.use(chaiHttp);
 
-function seedRestaurantData() {
-  console.info('seeding restaurant data');
+function seedBeerData() {
+  console.info('seeding beer data');
   const seedData = [];
 
   for (let i=1; i<=10; i++) {
-    seedData.push(generateRestaurantData());
+    seedData.push(generateBeerData());
   }
   // this will return a promise
-  return Restaurant.insertMany(seedData);
+  return Beer.insertMany(seedData);
 }
 
 // used to generate data to put in db
@@ -51,7 +51,7 @@ function generateGrade() {
 // generate an object represnting a restaurant.
 // can be used to generate seed data for db
 // or request.body data
-function generateRestaurantData() {
+function generateBeerData() {
   return {
     name: faker.company.companyName(),
     borough: generateBoroughName(),
@@ -82,7 +82,7 @@ describe('Beer API resource', function() {
   });
 
   beforeEach(function() {
-    return seedRestaurantData();
+    return seedBeerData();
   });
 
   afterEach(function() {
@@ -98,7 +98,7 @@ describe('Beer API resource', function() {
   // on proving something small
   describe('GET endpoint', function() {
 
-    it('should return all existing restaurants', function() {
+    it('should return all existing beers', function() {
       // strategy:
       //    1. get back all restaurants returned by by GET request to `/restaurants`
       //    2. prove res has right status, data type
@@ -109,50 +109,50 @@ describe('Beer API resource', function() {
       // `.then()` calls below, so declare it here so can modify in place
       let res;
       return chai.request(app)
-        .get('/restaurants')
+        .get('/beers')
         .then(function(_res) {
           // so subsequent .then blocks can access resp obj.
           res = _res;
           res.should.have.status(200);
           // otherwise our db seeding didn't work
-          res.body.restaurants.should.have.length.of.at.least(1);
-          return Restaurant.count();
+          res.body.beers.should.have.length.of.at.least(1);
+          return Beer.count();
         })
         .then(function(count) {
-          res.body.restaurants.should.have.length.of(count);
+          res.body.beers.should.have.length.of(count);
         });
     });
 
 
-    it('should return restaurants with right fields', function() {
+    it('should return beers with right fields', function() {
       // Strategy: Get back all restaurants, and ensure they have expected keys
 
-      let resRestaurant;
+      let resBeer;
       return chai.request(app)
-        .get('/restaurants')
+        .get('/beers')
         .then(function(res) {
           res.should.have.status(200);
           res.should.be.json;
-          res.body.restaurants.should.be.a('array');
-          res.body.restaurants.should.have.length.of.at.least(1);
+          res.body.beers.should.be.a('array');
+          res.body.beers.should.have.length.of.at.least(1);
 
-          res.body.restaurants.forEach(function(restaurant) {
-            restaurant.should.be.a('object');
-            restaurant.should.include.keys(
+          res.body.beers.forEach(function(beer) {
+            beer.should.be.a('object');
+            beer.should.include.keys(
               'id', 'name', 'cuisine', 'borough', 'grade', 'address');
           });
-          resRestaurant = res.body.restaurants[0];
-          return Restaurant.findById(resRestaurant.id);
+          resBeer = res.body.beers[0];
+          return Beer.findById(resBeer.id);
         })
-        .then(function(restaurant) {
+        .then(function(beer) {
 
-          resRestaurant.id.should.equal(restaurant.id);
-          resRestaurant.name.should.equal(restaurant.name);
-          resRestaurant.cuisine.should.equal(restaurant.cuisine);
-          resRestaurant.borough.should.equal(restaurant.borough);
-          resRestaurant.address.should.contain(restaurant.address.building);
+          resBeer.id.should.equal(beer.id);
+          resBeer.name.should.equal(beer.name);
+          resBeer.cuisine.should.equal(beer.cuisine);
+          resBeer.borough.should.equal(beer.borough);
+          resBeer.address.should.contain(beer.address.building);
 
-          resRestaurant.grade.should.equal(restaurant.grade);
+          resBeer.grade.should.equal(beer.grade);
         });
     });
   });
@@ -162,40 +162,40 @@ describe('Beer API resource', function() {
     // then prove that the restaurant we get back has
     // right keys, and that `id` is there (which means
     // the data was inserted into db)
-    it('should add a new restaurant', function() {
+    it('should add a new beer', function() {
 
-      const newRestaurant = generateRestaurantData();
+      const newBeer = generateBeerData();
       let mostRecentGrade;
 
       return chai.request(app)
-        .post('/restaurants')
-        .send(newRestaurant)
+        .post('/beers')
+        .send(newBeer)
         .then(function(res) {
           res.should.have.status(201);
           res.should.be.json;
           res.body.should.be.a('object');
           res.body.should.include.keys(
             'id', 'name', 'cuisine', 'borough', 'grade', 'address');
-          res.body.name.should.equal(newRestaurant.name);
+          res.body.name.should.equal(newBeer.name);
           // cause Mongo should have created id on insertion
           res.body.id.should.not.be.null;
-          res.body.cuisine.should.equal(newRestaurant.cuisine);
-          res.body.borough.should.equal(newRestaurant.borough);
+          res.body.cuisine.should.equal(newBeer.cuisine);
+          res.body.borough.should.equal(newBeer.borough);
 
-          mostRecentGrade = newRestaurant.grades.sort(
+          mostRecentGrade = newBeer.grades.sort(
             (a, b) => b.date - a.date)[0].grade;
 
           res.body.grade.should.equal(mostRecentGrade);
-          return Restaurant.findById(res.body.id);
+          return Beer.findById(res.body.id);
         })
-        .then(function(restaurant) {
-          restaurant.name.should.equal(newRestaurant.name);
-          restaurant.cuisine.should.equal(newRestaurant.cuisine);
-          restaurant.borough.should.equal(newRestaurant.borough);
-          restaurant.grade.should.equal(mostRecentGrade);
-          restaurant.address.building.should.equal(newRestaurant.address.building);
-          restaurant.address.street.should.equal(newRestaurant.address.street);
-          restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
+        .then(function(beer) {
+          beer.name.should.equal(newBeer.name);
+          beer.cuisine.should.equal(newBeer.cuisine);
+          beer.borough.should.equal(newBeer.borough);
+          beer.grade.should.equal(mostRecentGrade);
+          beer.address.building.should.equal(newBeer.address.building);
+          beer.address.street.should.equal(newBeer.address.street);
+          beer.address.zipcode.should.equal(newBeer.address.zipcode);
         });
     });
 
@@ -234,26 +234,26 @@ describe('Beer API resource', function() {
         cuisine: 'futuristic fusion'
       };
 
-      return Restaurant
+      return Beer
         .findOne()
         .exec()
-        .then(function(restaurant) {
-          updateData.id = restaurant.id;
+        .then(function(beer) {
+          updateData.id = beer.id;
 
           // make request then inspect it to make sure it reflects
           // data we sent
           return chai.request(app)
-            .put(`/restaurants/${restaurant.id}`)
+            .put(`/beers/${beer.id}`)
             .send(updateData);
         })
         .then(function(res) {
           res.should.have.status(204);
 
-          return Restaurant.findById(updateData.id).exec();
+          return Beer.findById(updateData.id).exec();
         })
-        .then(function(restaurant) {
-          restaurant.name.should.equal(updateData.name);
-          restaurant.cuisine.should.equal(updateData.cuisine);
+        .then(function(beer) {
+          beer.name.should.equal(updateData.name);
+          beer.cuisine.should.equal(updateData.cuisine);
         });
     });
   });
@@ -266,25 +266,25 @@ describe('Beer API resource', function() {
     //  4. prove that restaurant with the id doesn't exist in db anymore
     it('delete a restaurant by id', function() {
 
-      let restaurant;
+      let beer;
 
-      return Restaurant
+      return Beer
         .findOne()
         .exec()
-        .then(function(_restaurant) {
-          restaurant = _restaurant;
-          return chai.request(app).delete(`/restaurants/${restaurant.id}`);
+        .then(function(_beer) {
+          beer = _beer;
+          return chai.request(app).delete(`/beers/${beer.id}`);
         })
         .then(function(res) {
           res.should.have.status(204);
-          return Restaurant.findById(restaurant.id).exec();
+          return Beer.findById(beer.id).exec();
         })
-        .then(function(_restaurant) {
+        .then(function(_beer) {
           // when a variable's value is null, chaining `should`
-          // doesn't work. so `_restaurant.should.be.null` would raise
-          // an error. `should.be.null(_restaurant)` is how we can
+          // doesn't work. so `_beer.should.be.null` would raise
+          // an error. `should.be.null(_beer)` is how we can
           // make assertions about a null value.
-          should.not.exist(_restaurant);
+          should.not.exist(_beer);
         });
     });
   });
