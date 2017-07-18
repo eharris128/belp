@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
+'use strict';
 
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 // Use faker to populate our database with beer data
 // Follow the format of the test database
 
@@ -53,11 +55,48 @@ restaurantSchema.methods.apiRepr = function() {
   };
 }
 
+
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
 
+// User related functions
+const UserSchema = mongoose.Schema({
+  username:{
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  firstName: {type: String, default: ''},
+  lastName: {type: String, default: ''}
+});
+
+UserSchema.methods.apiRepr = function() {
+  return {
+    username: this.username || '',
+    firstName: this.firstName || '',
+    lastName: this.lastName || ''
+  };
+};
+
+UserSchema.methods.validatePassword = function(password) {
+  return bcrypt
+    .compare(password, this.password)
+    .then(isValid => isValid);
+};
+
+UserSchema.statics.hashPassword = function(password) {
+  return bcrypt
+    .hash(password, 10)
+    .then(hash => hash);
+};
+
 // const Beer = mongoose.model('Beer', beerSchema);
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
+const User = mongoose.model('User', UserSchema);
 
-// module.export = {Beer};
-module.exports = {Restaurant};
+// module.export = {Beer, User};
+module.exports = {Restaurant, User};
