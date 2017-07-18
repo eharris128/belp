@@ -1,0 +1,75 @@
+'use strict';
+
+let appState = {
+  beerData: {}
+};
+
+// Fake Data to Populate Front-End
+
+let MOCK_BEER_DATA = {
+  'id': '1234',
+  'Name': 'Super Duper Beer',
+  'ABV': '100%',
+  'Style': 'Belgian Wheat Ale',
+  'IBU': '5',
+  'Description': 'Hoppy and Fruity',
+  'Brewery': 'Local Brew',
+  'Reviews': [ 'Decent', 'Terrible', 'Tasty']
+};
+
+// State Modification Functions
+function updatesStateBeerData(MOCK_BEER_DATA) {
+  appState.beerData = MOCK_BEER_DATA;
+  // console.log('my app state' + appState.beerData.Name);
+}
+
+// Render Functions
+function stateRender(state) {
+  console.log(state.beerData.Name);
+  let stateRenderTemplate = (`
+    <h2> Beer Name: ${state.beerData.Name}</h2`);
+  $('.js-results').removeClass('hidden');
+}
+// Data Retrieval functions
+// Retrieve Data from DB
+// Send JSON from DB to render functions and other functions that need it
+
+function getApiData(beerName) {
+  // return fetch (`our Url endpoint here`)
+  //.then
+  updatesStateBeerData(MOCK_BEER_DATA);
+  stateRender(appState);
+}
+
+
+// Event Listener Functions
+
+function submitBeerName() {
+  $('#js-form').submit(function(event) {
+    event.preventDefault();
+    let beerName = $('#beer-name').val();
+    getApiData(beerName);
+    // getAndDisplayStatusUpdates();
+    // Move the below class removal statement into the render function after it is made.
+  });
+}
+
+$(function(){
+  submitBeerName();
+});
+
+// Add these functions and the call to getAndDisplayStatusUpdates() to see basic data visualization.
+
+// function getRecentStatusUpdates(callbackFn) {
+//   setTimeout(function(){ callbackFn(MOCK_BEER_DATA);}, 100);
+// }
+
+// function displayStatusUpdates(data) {
+//   $('body').append(
+//     '<p>' + data.beer[0].Name + '</p>');
+//   console.log(data.beer[0].Name);
+// }
+
+// function getAndDisplayStatusUpdates() {
+//   getRecentStatusUpdates(displayStatusUpdates);
+// }
