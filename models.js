@@ -1,25 +1,22 @@
-'use strict';
-
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-// Use faker to populate our database with beer data
-// Follow the format of the test database
-
 
 // this is our schema to represent a restaurant
-const restaurantSchema = mongoose.Schema({
+const beerSchema = mongoose.Schema({
   name: {type: String, required: true},
-  borough: {type: String, required: true},
-  cuisine: {type: String, required: true},
-  address: {
-    building: String,
-    // coord will be an array of string values
-    coord: [String],
-    street: String,
-    zipcode: String
-  },
+  abv: {type: Number, required: true},
+  style: String,
+  description: {type: String, required: true},
+  brewery: String,
+  ibu: Number
+  // {
+  //   building: String,
+  //   // coord will be an array of string values
+  //   coord: [String],
+  //   street: String,
+  //   zipcode: String
+  // },
   // grades will be an array of objects
-  grades: [{
+  reviews: [{
     date: Date,
     grade: String,
     score: Number
@@ -31,11 +28,11 @@ const restaurantSchema = mongoose.Schema({
 // properties that are stored in the database. Here we use it
 // to generate a human readable string based on the address object
 // we're storing in Mongo.
-restaurantSchema.virtual('addressString').get(function() {
+beerSchema.virtual('addressString').get(function() {
   return `${this.address.building} ${this.address.street}`.trim()});
 
 // this virtual grabs the most recent grade for a restaurant.
-restaurantSchema.virtual('grade').get(function() {
+beerSchema.virtual('grade').get(function() {
   const gradeObj = this.grades.sort((a, b) => {return b.date - a.date})[0] || {};
   return gradeObj.grade;
 });
@@ -43,7 +40,7 @@ restaurantSchema.virtual('grade').get(function() {
 // this is an *instance method* which will be available on all instances
 // of the model. This method will be used to return an object that only
 // exposes *some* of the fields we want from the underlying data
-restaurantSchema.methods.apiRepr = function() {
+beerSchema.methods.apiRepr = function() {
 
   return {
     id: this._id,
@@ -55,48 +52,8 @@ restaurantSchema.methods.apiRepr = function() {
   };
 }
 
-
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
+const Beer = mongoose.model('Beer', beerSchema);
 
-// User related functions
-const UserSchema = mongoose.Schema({
-  username:{
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  firstName: {type: String, default: ''},
-  lastName: {type: String, default: ''}
-});
-
-UserSchema.methods.apiRepr = function() {
-  return {
-    username: this.username || '',
-    firstName: this.firstName || '',
-    lastName: this.lastName || ''
-  };
-};
-
-UserSchema.methods.validatePassword = function(password) {
-  return bcrypt
-    .compare(password, this.password)
-    .then(isValid => isValid);
-};
-
-UserSchema.statics.hashPassword = function(password) {
-  return bcrypt
-    .hash(password, 10)
-    .then(hash => hash);
-};
-
-// const Beer = mongoose.model('Beer', beerSchema);
-const Restaurant = mongoose.model('Restaurant', restaurantSchema);
-const User = mongoose.model('User', UserSchema);
-
-// module.export = {Beer, User};
-module.exports = {Restaurant, User};
+module.exports = {Beer};
