@@ -50,6 +50,30 @@ const strategy = new BasicStrategy(function(username, password, callback) {
 
 passport.use(strategy);
 
+// This endpoint should be removed at a later date as it reveals user data
+// It can currently be used to visualize what users have been created in Postman
+
+// GET request to /users
+app.get('/users', (req, res) => {
+  User
+    .find()
+    .limit(10)
+    .exec()
+    .then(users => {
+      res.json({
+        users: users.map(
+          (user) => user.apiRepr())
+      });
+    })
+    .catch(
+      err => {
+        console.error(err);
+        res.status(500).json({message: 'Internal server error'});
+      });
+});
+
+// POST request to /users
+
 app.post('/users', (req, res) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
 
@@ -122,7 +146,6 @@ app.get('/restaurants', (req, res) => {
         res.status(500).json({message: 'Internal server error'});
       });
 });
-// test comment
 
 // make a comment after class
 // can also request by ID
@@ -138,7 +161,6 @@ app.get('/restaurants/:id', (req, res) => {
         res.status(500).json({message: 'Internal server error'})
     });
 });
-// makes another comment
 
 app.post('/restaurants', (req, res) => {
 
