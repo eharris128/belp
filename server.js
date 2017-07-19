@@ -85,7 +85,7 @@ app.post('/users', (req, res) => {
   }
 
   let {username, password, firstName, lastName} = req.body;
-
+console.log(req.body);
   username = username.trim();
   password = password.trim();
 
