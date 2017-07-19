@@ -71,13 +71,13 @@ $(function(){
     console.log('clicked');
   });
 
-  $('#js-form').submit(function(event) {
+  $('.js-beer-form').submit(function(event) {
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
   });
 
-  $('.js-signup').on('submit', function(event){
+  $('.js-signup-form').on('submit', function(event){
     event.preventDefault();
     alert('hello');
   });
