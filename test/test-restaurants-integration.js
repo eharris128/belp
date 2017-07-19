@@ -168,7 +168,7 @@ describe('Beer API resource', function() {
     // then prove that the restaurant we get back has
     // right keys, and that `id` is there (which means
     // the data was inserted into db)
-    it('should add a new beer', function() {
+    it.only('should add a new beer', function() {
 
       const newBeer = generateBeerData();
 
@@ -198,12 +198,7 @@ describe('Beer API resource', function() {
           beer.ibu.should.equal(newBeer.ibu);
 
           for (let i = 0; i < newBeer.reviews.length; i++) {
-            // The comparison below is a match, but it is not passing.
-            // beer.reviews[i].date.should.equal(newBeer.reviews[i].date);
-            // console.log('beer reviews date' + beer.reviews[i].date);
-            // console.log('FAKER beer reviews date: ' + newBeer.reviews[i].date);
-            
-            beer.reviews[i].date.should.be.a('date');
+            beer.reviews[i].date.toString().should.equal(newBeer.reviews[i].date.toString());
             beer.reviews[i].comment.should.equal(newBeer.reviews[i].comment);
           }
         });
