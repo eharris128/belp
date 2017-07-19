@@ -218,10 +218,11 @@ app.put('/beers/:id',
 
     Beer
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-      .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+      .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
       .exec()
-      .then(beer => res.status(204).end())
+      .then(updatedBeer => res.status(204).json(updatedBeer.apiRepr()))
       .catch(err => res.status(500).json({message: 'Internal server error'}));
+
   });
 
 app.delete('/beers/:id', (req, res) => {
