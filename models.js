@@ -1,8 +1,8 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
-// this is our schema to represent a restaurant
+const bcrypt = require('bcryptjs');
+// this is our schema to represent a beer
 const beerSchema = mongoose.Schema({
   name: {type: String, required: true},
   abv: {type: Number, required: true},
@@ -10,14 +10,6 @@ const beerSchema = mongoose.Schema({
   description: {type: String, required: true},
   brewery: String,
   ibu: Number,
-  // {
-  //   building: String,
-  //   // coord will be an array of string values
-  //   coord: [String],
-  //   street: String,
-  //   zipcode: String
-  // },
-  // grades will be an array of objects
   reviews: [{
     // userID: { type: mongoose.Schema.Types.ObjectId},
     date: { type: Date, default: Date.now },
@@ -58,9 +50,44 @@ beerSchema.methods.apiRepr = function() {
   };
 };
 
+// User related functions
+const UserSchema = mongoose.Schema({
+  username:{
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  firstName: {type: String, default: ''},
+  lastName: {type: String, default: ''}
+});
+
+UserSchema.methods.apiRepr = function() {
+  return {
+    username: this.username || '',
+    firstName: this.firstName || '',
+    lastName: this.lastName || ''
+  };
+};
+
+UserSchema.methods.validatePassword = function(password) {
+  return bcrypt
+    .compare(password, this.password)
+    .then(isValid => isValid);
+};
+
+UserSchema.statics.hashPassword = function(password) {
+  return bcrypt
+    .hash(password, 10)
+    .then(hash => hash);
+};
 
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
 const Beer = mongoose.model('Beer', beerSchema);
+const User = mongoose.model('User', UserSchema);
 
-module.exports = {Beer};
+module.exports = {Beer, User};
