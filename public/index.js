@@ -17,7 +17,7 @@ let MOCK_BEER_DATA = {
   'Reviews': [ 'Decent', 'Terrible', 'Tasty']
 };
 
-// State Modification Functions
+// State Modification Functions 
 function updatesStateBeerData(userSearchBeer) {
   console.log(userSearchBeer);
   appState.beerData = userSearchBeer;
@@ -27,6 +27,10 @@ function updatesStateBeerData(userSearchBeer) {
 // Render Functions
 function stateRender(state) {
   const { beerData } = state;
+  let beerList = beerData.reviews.map(function(review, i){
+    return (`<li>${review.comment}</li>`);
+  }).join('');
+    
   let stateRenderTemplate = (`
     <h2> Beer Name: ${beerData.name}</h2
     <p> Style: ${beerData.style}</p>
@@ -34,15 +38,12 @@ function stateRender(state) {
     <p> IBU: ${beerData.ibu}</p>
     <p> Description: ${beerData.description}</p>
     <p> Brewery: ${beerData.brewery}</p>
-    <ul> Reviews: 
-      <li>${beerData.reviews[0].comment}</li>
-      <li>${beerData.reviews[1].comment}</li>
-    </ul>
+    <h3> Reviews: </h3>
+    <ul> ${beerList} </ul>
     <button class="js-review" type="button"> Click to leave a review </button>
     `);
 
-  $('.js-results').removeClass('hidden');
-  $('.js-results').html(stateRenderTemplate);
+  $('.js-results').html(stateRenderTemplate).removeClass('hidden');
 }
 
 // Data Retrieval functions
@@ -71,7 +72,7 @@ function getApiData(beerName) {
 $(function(){
 
   // Event Listener not working for js-review button
-  $('.js-review').on('click', function(event){
+  $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
     console.log('clicked');
   });
