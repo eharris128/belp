@@ -17,76 +17,70 @@ let MOCK_BEER_DATA = {
   'Reviews': [ 'Decent', 'Terrible', 'Tasty']
 };
 
-// State Modification Functions
-function updatesStateBeerData(MOCK_BEER_DATA) {
-  appState.beerData = MOCK_BEER_DATA;
+// State Modification Functions 
+function updatesStateBeerData(userSearchBeer) {
+  console.log(userSearchBeer);
+  appState.beerData = userSearchBeer;
   // console.log('my app state' + appState.beerData.Name);
 }
 
 // Render Functions
 function stateRender(state) {
   const { beerData } = state;
-  console.log(beerData.Reviews[0]);
+  let beerList = beerData.reviews.map(function(review, i){
+    return (`<li>${review.comment}</li>`);
+  }).join('');
+    
   let stateRenderTemplate = (`
-    <h2> Beer Name: ${beerData.Name}</h2
-    <p> Style: ${beerData.Style}</p>
-    <p> ABV: ${beerData.ABV}</p>
-    <p> IBU: ${beerData.IBU}</p>
-    <p> Description: ${beerData.Description}</p>
-    <p> Brewery: ${beerData.Brewery}</p>
-    <p> Reviews: ${beerData.Reviews}</p>
+    <h2> Beer Name: ${beerData.name}</h2
+    <p> Style: ${beerData.style}</p>
+    <p> ABV: ${beerData.abv}</p>
+    <p> IBU: ${beerData.ibu}</p>
+    <p> Description: ${beerData.description}</p>
+    <p> Brewery: ${beerData.brewery}</p>
+    <h3> Reviews: </h3>
+    <ul> ${beerList} </ul>
+    <button class="js-review" type="button"> Click to leave a review </button>
     `);
-  $('.js-results').removeClass('hidden');
-  $('.js-results').html(stateRenderTemplate);
+
+  $('.js-results').html(stateRenderTemplate).removeClass('hidden');
 }
 
 // Data Retrieval functions
-// Retrieve Data from DB
-// Send JSON from DB to render functions and other functions that need it
 
 function getApiData(beerName) {
-  // return fetch (`our Url endpoint here`)
-  fetch('/beer')
+  // console.log('User input beer name:' + beerName);
+  fetch('/beers')
     .then(res => {
       return res.json();
     })
     .then(data => {
+      for (let i = 0; i < data.beers.length; i++) {
+        let currentBeer = data.beers[i];
+        if (currentBeer.name === beerName) {
+          updatesStateBeerData(currentBeer);
+          stateRender(appState);
+        } 
+      }
 
     });
-  //.then
-  updatesStateBeerData(MOCK_BEER_DATA);
-  stateRender(appState);
 }
 
 
 // Event Listener Functions
 
-function submitBeerName() {
+$(function(){
+
+  // Event Listener not working for js-review button
+  $('.js-results').on('click', '.js-review', function(event){
+    event.preventDefault();
+    console.log('clicked');
+  });
+
   $('#js-form').submit(function(event) {
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
-    // getAndDisplayStatusUpdates();
-    // Move the below class removal statement into the render function after it is made.
+  
   });
-}
-
-$(function(){
-  submitBeerName();
 });
-
-// Add these functions and the call to getAndDisplayStatusUpdates() to see basic data visualization.
-
-// function getRecentStatusUpdates(callbackFn) {
-//   setTimeout(function(){ callbackFn(MOCK_BEER_DATA);}, 100);
-// }
-
-// function displayStatusUpdates(data) {
-//   $('body').append(
-//     '<p>' + data.beer[0].Name + '</p>');
-//   console.log(data.beer[0].Name);
-// }
-
-// function getAndDisplayStatusUpdates() {
-//   getRecentStatusUpdates(displayStatusUpdates);
-// }

@@ -20,7 +20,7 @@ const beerSchema = mongoose.Schema({
   // grades will be an array of objects
   reviews: [{
     // userID: { type: mongoose.Schema.Types.ObjectId},
-    date: Date,
+    date: { type: Date, default: Date.now },
     comment: String
     // score: Number
   }]

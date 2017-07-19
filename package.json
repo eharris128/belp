@@ -25,9 +25,9 @@
     "faker": "^3.1.0",
     "mocha": "^3.2.0"
   },
-    "eslintConfig": {
-      "env":{
-        "jquery": true  
-      }
+  "eslintConfig": {
+    "env": {
+      "jquery": true
     }
+  }
 }
