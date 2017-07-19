@@ -128,6 +128,15 @@ app.get('/beers', (req, res) => {
     // we're limiting because restaurants db has > 25,000
     // documents, and that's too much to process/return
     .limit(10)
+    // .populate('author')
+    .populate('user', 'firstName lastName')
+    // .populate({
+    //   path: 'reviews',
+    //   populate: {
+    //     path: 'author',
+    //     model: 'User'
+    //   }
+    // })
     // `exec` returns a promise
     .exec()
     // success callback: for each restaurant we got back, we'll
@@ -163,7 +172,11 @@ app.get('/beers/:id', (req, res) => {
 });
 
 app.post('/beers', (req, res) => {
-
+  // let firstName;
+  // let lastName;
+  // User.find({_id: req.body.reviews[0].author}).then(user => {
+  //   return firstName = user[0].firstName;
+  // });
   const requiredFields = ['name', 'style', 'abv', 'description', 'reviews', 'brewery', 'ibu', ];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -173,24 +186,28 @@ app.post('/beers', (req, res) => {
       return res.status(400).send(message);
     }
   }
-
-  Beer
-    .create({
-      name: req.body.name,
-      abv: req.body.abv,
-      style: req.body.style,
-      reviews: req.body.reviews,
-      brewery: req.body.brewery,
-      ibu: req.body.ibu,
-      description: req.body.description})
-    .then(
-      beer => res.status(201).json(beer.apiRepr()))
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({message: 'Internal server error'});
-    });
+  User.find({_id: req.body.reviews[0].author}).then(user => {
+    // create map function to through the users
+      // go into reviews array and add in firstName and lastName
+    Beer
+      .create({
+        name: req.body.name,
+        abv: req.body.abv,
+        style: req.body.style,
+        reviews: req.body.reviews,
+        brewery: req.body.brewery,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
+        ibu: req.body.ibu,
+        description: req.body.description})
+      .then(
+        beer => res.status(201).json(beer.apiRepr()))
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({message: 'Internal server error'});
+      });
+  });
 });
-
 
 app.put('/beers/:id', 
   passport.authenticate('basic', {session: false}),
