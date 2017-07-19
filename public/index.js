@@ -14,8 +14,12 @@ function updatesStateBeerData(userSearchBeer) {
 // Render Functions
 function stateRender(state) {
   const { beerData } = state;
+  
+    console.log(beerData);
   let beerList = beerData.reviews.map(function(review, i){
-    return (`<li>${review.comment}</li>`);
+    return (`
+    <li><p>${beerData.firstName} ${beerData.lastName}: ${review.comment}</p></li>
+    `);
   }).join('');
     
   let stateRenderTemplate = (`
