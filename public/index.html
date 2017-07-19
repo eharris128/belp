@@ -11,12 +11,25 @@
 <body>
     <header><h1>Belp - Beer Reviews By Beer Lovers</h1></header>
     <main role="main">
-      <form action="/#" id="js-form">
+        <h2 class="sign-up">Sign up</h2>
+		<form action="/signup/" method="post">
+			<fieldset>
+				<label class="input-label" for="email">Username</label>	
+				<input class="input-box" type="email" name="email" id="email" required placeholder="myuser123">
+				<label class="input-label" for="password">Password</label>
+				<input class="input-box" type="text" name="password" id="password" required placeholder="A password">
+			</fieldset>
+			<button class ="submit-button" type="submit">Sign up</button>
+		</form>
+        <!--If there is sufficient time: -->
+      <!--<p class="log-in">Already have an account? <a class="log-in" href="/login">Log In</a></p>-->
+			<a class="password" href="/forgot-password/new">Forgot password?</a>
+      <form action="/beers" id="js-form">
         <fieldset>
-            <label for="beer-name">Please provide the name of a beer:</label>
+            <label class="input-label" for="beer-name">Please provide the name of a beer:</label>
             <input type="text" id="beer-name" required placeholder="Hercules Double IPA">
         </fieldset>
-        <button class="button" type="submit">Submit Beer Search</button>
+        <button class="button submit-button" type="submit">Submit Beer Search</button>
       </form>
       
       <div class="js-results hidden">
