@@ -11,11 +11,32 @@ const beerSchema = mongoose.Schema({
   brewery: String,
   ibu: Number,
   reviews: [{
-    // userID: { type: mongoose.Schema.Types.ObjectId},
+    author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    firstName: { type: String},
+    lastName: {type: String},
+    // author: { type: Number, ref: 'User'},
     date: { type: Date, default: Date.now },
     comment: String
-    // score: Number
-  }]
+  }],
+  firstName: String,
+  lastName: String
+});
+
+// myuser123 ; password
+const UserSchema = mongoose.Schema({
+  // _creator: { type: Number, ref: 'Beer'},
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Beer'}],
+  username:{
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  firstName: {type: String, default: ''},
+  lastName: {type: String, default: ''}
 });
 
 // *virtuals* (http://mongoosejs.com/docs/guide.html#virtuals)
@@ -46,24 +67,13 @@ beerSchema.methods.apiRepr = function() {
     description: this.description,
     reviews: this.reviews,
     brewery: this.brewery,
+    firstName: this.firstName,
+    lastName: this.lastName,
     ibu:this.ibu
   };
 };
 
 // User related functions
-const UserSchema = mongoose.Schema({
-  username:{
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  firstName: {type: String, default: ''},
-  lastName: {type: String, default: ''}
-});
 
 UserSchema.methods.apiRepr = function() {
   return {
