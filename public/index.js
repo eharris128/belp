@@ -65,21 +65,20 @@ function createUser() {
 
 $(function(){
 
-  // Event Listener not working for js-review button
-  $('.js-results').on('click', '.js-review', function(event){
+  $('.js-signup-form').on('submit', function(event){
     event.preventDefault();
-    console.log('clicked');
+    alert('hello');
   });
-
+  
   $('.js-beer-form').submit(function(event) {
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
   });
 
-  $('.js-signup-form').on('submit', function(event){
+  $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
-    alert('hello');
+    console.log('clicked');
   });
-  
+
 });
