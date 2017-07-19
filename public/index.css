@@ -4,3 +4,31 @@
  form {
    width: 200px;
  }
+
+body {
+  text-align: center;
+  background: url('/img/beer.jpg') no-repeat;
+  background-size: cover;
+}
+
+form {
+  margin: auto;
+  padding: 10px;
+}
+
+.sign-up {
+  font-size: 18px;
+}
+
+.input-label {
+	margin-bottom: 5px;
+	margin-top: 5px;
+	display: inline-block;
+	font-weight: 600;
+}
+
+.submit-button {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
