@@ -15,7 +15,7 @@ function updatesStateBeerData(userSearchBeer) {
 function stateRender(state) {
   const { beerData } = state;
   
-    console.log(beerData);
+  console.log(beerData);
   let beerList = beerData.reviews.map(function(review, i){
     return (`
     <li><p>${beerData.firstName} ${beerData.lastName}: ${review.comment}</p></li>
@@ -56,6 +56,11 @@ function getApiData(beerName) {
     });
 }
 
+// User Endpoint Functions
+
+function createUser() {
+  
+}
 // Event Listener Functions
 
 $(function(){
@@ -70,6 +75,11 @@ $(function(){
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
-  
   });
+
+  $('.js-signup').on('submit', function(event){
+    event.preventDefault();
+    alert('hello');
+  });
+  
 });
