@@ -22,6 +22,9 @@ const {Beer, User} = require('./models');
 const app = express();
 
 app.use(morgan('common'));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
@@ -76,7 +79,7 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
-
+console.log(req.body);
   const missingIndex = requiredFields.findIndex(field => !req.body[field]);
   if (missingIndex !== -1) {
     return res.status(400).json({
