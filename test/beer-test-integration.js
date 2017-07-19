@@ -15,12 +15,12 @@ const {TEST_DATABASE_URL} = require('../config');
 chai.use(chaiHttp);
 
 const myTestUser = {
-        username: faker.internet.userName(),
-        unhashedPassword: 'password',
-        password: '$2a$10$AmPJwn7FES9mV3ygK1DmvOlVHuO1oPg9idgYqXzTMjewvtp9goZF2',
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName()
-      };
+  username: faker.internet.userName(),
+  unhashedPassword: 'password',
+  password: '$2a$10$AmPJwn7FES9mV3ygK1DmvOlVHuO1oPg9idgYqXzTMjewvtp9goZF2',
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName()
+};
 
 function seedBeerData() {
   console.info('seeding beer data');
@@ -32,33 +32,6 @@ function seedBeerData() {
   // this will return a promise
   return Beer.insertMany(seedData);
 }
-
-// used to generate data to put in db
-
-// function generateStyleName() {
-//   const styles = [
-//     // 'Manhattan', 'Queens', 'Brooklyn', 'Bronx', 'Staten Island'
-//     ];  //////////
-//   return styles[Math.floor(Math.random() * styles.length)];
-// }
-
-// used to generate data to put in db
-
-// function generateCuisineType() {
-//   const cuisines = ['Italian', 'Thai', 'Colombian'];
-//   return cuisines[Math.floor(Math.random() * cuisines.length)];
-// }
-
-// used to generate data to put in db
-
-// function generateGrade() {
-//   const grades = ['A', 'B', 'C', 'D', 'F'];
-//   const grade = grades[Math.floor(Math.random() * grades.length)];
-//   return {
-//     date: faker.date.past(),
-//     grade: grade
-//   };
-// }
 
 // generate an object represnting a restaurant.
 // can be used to generate seed data for db
@@ -239,16 +212,16 @@ describe('Beer API resource', function() {
     it.only('should update fields you send over', function() {
       const updateData = {
         name: 'fofofofofofofof',
-        reviews: {date: 'current', comment: 'futuristic fusion'}
+        style: 'futuristic fusion'
       };
 
       return Beer
         .findOne()
         .exec()
         .then(function(beer) {
+          // console.log('hello' + beer.reviews[]);
+          
           updateData.id = beer.id;
-          console.log("username" + myTestUser.username);
-          console.log('password' + myTestUser.unhashedPassword);
           // make request then inspect it to make sure it reflects
           // data we sent
           return chai.request(app)
@@ -257,17 +230,13 @@ describe('Beer API resource', function() {
             .send(updateData);
         })
         .then(function(res) {
-          res.should.have.status(204);
-          res.should.be.json;
-          res.body.should.be.a('object');
-          res.body.name.should.equal(updataData.name);
-          // res.body.reviews.should.equal()
 
+          res.should.have.status(204);
           return Beer.findById(updateData.id).exec();
         })
         .then(function(beer) {
           beer.name.should.equal(updateData.name);
-          // beer.style.should.equal(updateData.style);
+          beer.style.should.equal(updateData.style);
         });
     });
   });
