@@ -4,19 +4,6 @@ let appState = {
   beerData: {}
 };
 
-// Fake Data to Populate Front-End
-
-let MOCK_BEER_DATA = {
-  'id': '1234',
-  'Name': 'Super Duper Beer',
-  'ABV': '100%',
-  'Style': 'Belgian Wheat Ale',
-  'IBU': '5',
-  'Description': 'Hoppy and Fruity',
-  'Brewery': 'Local Brew',
-  'Reviews': [ 'Decent', 'Terrible', 'Tasty']
-};
-
 // State Modification Functions 
 function updatesStateBeerData(userSearchBeer) {
   console.log(userSearchBeer);
@@ -49,7 +36,6 @@ function stateRender(state) {
 // Data Retrieval functions
 
 function getApiData(beerName) {
-  // console.log('User input beer name:' + beerName);
   fetch('/beers')
     .then(res => {
       return res.json();
@@ -65,7 +51,6 @@ function getApiData(beerName) {
 
     });
 }
-
 
 // Event Listener Functions
 
