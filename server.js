@@ -23,14 +23,14 @@ const app = express();
 
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({
-    extended: true
+  extended: true
 }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
@@ -85,7 +85,7 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
-console.log(req.body);
+  console.log(req.body);
   const missingIndex = requiredFields.findIndex(field => !req.body[field]);
   if (missingIndex !== -1) {
     return res.status(400).json({
@@ -195,17 +195,34 @@ app.post('/beers', (req, res) => {
     }
   }
   User.find({_id: req.body.reviews[0].author}).then(user => {
+    console.log('ok')
     // create map function to through the users
-      // go into reviews array and add in firstName and lastName
+    // go into reviews array and add in firstName and lastName
+    //  Beer create {
+    //   reviews: populateNames(res.body.reviews);  
+    // }
+  //console.log(typeof reviews);
+  // maybe use for each instead of map? depends on if we need to be returning something to the
+  // beer.reviews in the beer object
+    let userReviews = res.body.reviews.map(function(review, i) {
+      console.log('a review:' + review);
+      // Look up how to add new key value pairs to objects
+      // user[0] may work, need to determine how to correctly select user based on who is logged in
+      review.firstName = user[0].firstName;
+      console.log('a reviewers name:' + review.firstName);
+      review.lastName = user[0].lastName;
+    });
+
+
+
     Beer
       .create({
         name: req.body.name,
         abv: req.body.abv,
         style: req.body.style,
-        reviews: req.body.reviews,
+        reviews: userReviews,
+        // reviews: populateReviewsWithNames(res.body.reviews),
         brewery: req.body.brewery,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
         ibu: req.body.ibu,
         description: req.body.description})
       .then(
