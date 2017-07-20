@@ -18,7 +18,7 @@ function stateRender(state) {
   console.log(beerData);
   let beerList = beerData.reviews.map(function(review, i){
     return (`
-    <li><p>${review.firstName} ${review.lastName}: ${review.comment}</p></li>
+    <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
     `);
   }).join('');
     
