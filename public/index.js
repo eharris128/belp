@@ -3,14 +3,14 @@
 let appState = {
   beerData: {},
   userLoggedIn: false,
-  userQueryInDb: false
+  userQueryPresentInDb: false
 };
 
 // State Modification Functions 
 
 function resetState() {
   appState.userLoggedIn = false;
-  appState.userQueryInDb = false;
+  appState.userQueryPresentInDb = false;
 }
 
 function updatesStateUserLogin(){
@@ -24,18 +24,28 @@ function updatesStateBeerData(userSearchBeer) {
 
 // Render Functions
 
+// function showDOMStuff(state) {
+//   if state.err {
+//     //take specific render path
+//   }
+
+// }
+
+// function renderError(state){
+
+// }
 function stateRender(state) {
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
 
-  if (!state.userQueryInDb) {
+  if (!state.userQueryPresentInDb) {
     let errorMessageTemplate = (`
     <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
     `);
     $('.js-results').html(errorMessageTemplate).removeClass('hidden');
   }
 
-  if (beerData.name !== undefined && state.userQueryInDb !== false) {
+  if (beerData.name !== undefined && state.userQueryPresentInDb !== false) {
 
     let beerList = beerData.reviews.map(function(review, i){
       return (`
@@ -64,27 +74,36 @@ function stateRender(state) {
 
 // Data Retrieval functions
 
-function getApiData(beerName) {
+function getApiData(userQuery) {
   fetch('/beers')
     .then(res => {
       return res.json();
     })
     .then(data => {
-      for (let i = 0; i < data.beers.length; i++) {
-        let currentBeer = data.beers[i];
-        if (currentBeer.name === beerName) {
-          appState.userQueryInDb = true;
-          updatesStateBeerData(currentBeer);
-          stateRender(appState);
-        } 
-      }
-      if (!appState.userQueryInDb) {
+      if (data.beers.includes(userQuery)) {
+        // function for successful query
+        //the line below should be made into state modification function
+        appState.userQueryPresentInDb = true;
+        updatesStateBeerData(userQuery);
+        stateRender(appState);
+      } else {
+        // function for unsuccessful query
         stateRender(appState);
       }
     })
     .catch(err => {
       console.error(err);
     });
+
+  //   for (let i = 0; i < data.beers.length; i++) {
+  //     let currentBeer = data.beers[i];
+
+  //   }
+  //   if (!appState.userQueryPresentInDb) {
+  //     stateRender(appState);
+  //   }
+  // })
+
 }
 
 // User Endpoint Functions
@@ -108,7 +127,7 @@ function createUser(userData) {
     })
     .catch(err => {
       console.err(err);
-    })
+    });
 }
 // Event Listener Functions
 
@@ -130,8 +149,8 @@ $(function(){
   $('.js-beer-form').submit(function(event) {
     resetState();
     event.preventDefault();
-    let beerName = $('#beer-name').val();
-    getApiData(beerName);
+    let userQuery = $('#beer-name').val();
+    getApiData(userQuery);
     $('#beer-name').val('');
   });
 
