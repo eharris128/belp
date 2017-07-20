@@ -23,15 +23,18 @@ function updatesStateBeerData(userSearchBeer) {
 // Render Functions
 
 function stateRender(state) {
-  console.log('state' + state.beerData);
   const { beerData } = state;
-  let beerList = beerData.reviews.map(function(review, i){
-    return (`
+  const loggedIn =  state.userLoggedIn;
+
+  if (beerData.name !== undefined) {
+
+    let beerList = beerData.reviews.map(function(review, i){
+      return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
     `);
-  }).join('');
+    }).join('');
     
-  let stateRenderTemplate = (`
+    let stateRenderTemplate = (`
     <h2> Beer Name: ${beerData.name}</h2
     <p> Style: ${beerData.style}</p>
     <p> ABV: ${beerData.abv}</p>
@@ -43,8 +46,12 @@ function stateRender(state) {
     <button class="js-review" type="button"> Click to leave a review </button>
     `);
 
-  $('.js-results').html(stateRenderTemplate).removeClass('hidden');
+    $('.js-results').html(stateRenderTemplate).removeClass('hidden');
+  } else if ( loggedIn) {
+    $('.js-loggedIn').removeClass('hidden');
+  } 
 }
+ 
 
 // Data Retrieval functions
 
@@ -82,7 +89,7 @@ function createUser(userData) {
     })
     .then(function(res) {
       updatesStateUserLogin();
-      // stateRender(appState);
+      stateRender(appState);
     });
 }
 // Event Listener Functions
