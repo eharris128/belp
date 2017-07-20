@@ -209,7 +209,7 @@ describe('Beer API resource', function() {
     //  2. Make a PUT request to update that restaurant
     //  3. Prove restaurant returned by request contains data we sent
     //  4. Prove restaurant in db is correctly updated
-    it.only('should update fields you send over', function() {
+    it('should update fields you send over', function() {
       const updateData = {
         name: 'fofofofofofofof',
         style: 'futuristic fusion'
