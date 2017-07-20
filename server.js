@@ -7,16 +7,10 @@ const passport = require('passport');
 const {BasicStrategy} = require('passport-http');
 const morgan = require('morgan');
 
-// Mongoose internally uses a promise-like object,
-// but its better to make Mongoose use built in es6 promises
 mongoose.Promise = global.Promise;
 
-// config.js is where we control constants for entire
-// app like PORT and DATABASE_URL
 const {PORT, DATABASE_URL} = require('./config');
 
-//const {Beer, User} = require('./models'); This line will replace the following line 
-//after setting up Beer database 
 const {Beer, User} = require('./models');
 
 const app = express();
@@ -85,7 +79,6 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
-  console.log(req.body);
   const missingIndex = requiredFields.findIndex(field => !req.body[field]);
   if (missingIndex !== -1) {
     return res.status(400).json({
@@ -96,7 +89,6 @@ app.post('/users', (req, res) => {
   let {username, password, firstName, lastName} = req.body;
   username = username.trim();
   password = password.trim();
-  // check for existing user
   return User
     .find({username})
     .count()
@@ -105,7 +97,6 @@ app.post('/users', (req, res) => {
       if (count > 0) {
         return res.status(422).json({message: 'username already taken'});
       }
-      // if no existing user, hash password
       return User.hashPassword(password);
     })
     .then(hash => {
@@ -173,30 +164,22 @@ app.post('/beers', (req, res) => {
       return res.status(400).send(message);
     }
   }
-  // References to user[0] need to be replaced with reference to correct user to reflect who 
-  // left a review
-  User.find({_id: req.body.reviews[0].author}).then(user => {
-    req.body.reviews.map(function(review, i) {
-      review.firstName = user[0].firstName;
-      review.lastName = user[0].lastName;
-    });
 
-    Beer
-      .create({
-        name: req.body.name,
-        abv: req.body.abv,
-        style: req.body.style,
-        reviews: req.body.reviews,
-        brewery: req.body.brewery,
-        ibu: req.body.ibu,
-        description: req.body.description})
-      .then(
-        beer => res.status(201).json(beer.apiRepr()))
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({message: 'Internal server error'});
-      });
-  });
+  Beer
+    .create({
+      name: req.body.name,
+      abv: req.body.abv,
+      style: req.body.style,
+      reviews: req.body.reviews,
+      brewery: req.body.brewery,
+      ibu: req.body.ibu,
+      description: req.body.description})
+    .then(
+      beer => res.status(201).json(beer.apiRepr()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
 });
 
 app.put('/beers/:id', 
