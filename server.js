@@ -22,8 +22,17 @@ const {Beer, User} = require('./models');
 const app = express();
 
 app.use(morgan('common'));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // User and authorization related functions
 const strategy = new BasicStrategy(function(username, password, callback) {
@@ -76,7 +85,7 @@ app.get('/users', (req, res) => {
 
 app.post('/users', (req, res) => {
   const requiredFields = ['username', 'password', 'firstName', 'lastName'];
-
+  console.log(req.body);
   const missingIndex = requiredFields.findIndex(field => !req.body[field]);
   if (missingIndex !== -1) {
     return res.status(400).json({
@@ -87,7 +96,6 @@ app.post('/users', (req, res) => {
   let {username, password, firstName, lastName} = req.body;
   username = username.trim();
   password = password.trim();
-
   // check for existing user
   return User
     .find({username})
@@ -155,8 +163,6 @@ app.get('/beers', (req, res) => {
       });
 });
 
-
-// make a comment after class
 // can also request by ID
 app.get('/beers/:id', (req, res) => {
   Beer
@@ -172,11 +178,6 @@ app.get('/beers/:id', (req, res) => {
 });
 
 app.post('/beers', (req, res) => {
-  // let firstName;
-  // let lastName;
-  // User.find({_id: req.body.reviews[0].author}).then(user => {
-  //   return firstName = user[0].firstName;
-  // });
   const requiredFields = ['name', 'style', 'abv', 'description', 'reviews', 'brewery', 'ibu', ];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -186,18 +187,23 @@ app.post('/beers', (req, res) => {
       return res.status(400).send(message);
     }
   }
+  // References to user[0] need to be replaced with reference to correct user to reflect who 
+  // left a review
   User.find({_id: req.body.reviews[0].author}).then(user => {
-    // create map function to through the users
-      // go into reviews array and add in firstName and lastName
+    req.body.reviews.map(function(review, i) {
+      review.firstName = user[0].firstName;
+      review.lastName = user[0].lastName;
+    });
+
     Beer
       .create({
         name: req.body.name,
         abv: req.body.abv,
         style: req.body.style,
         reviews: req.body.reviews,
-        brewery: req.body.brewery,
         firstName: user[0].firstName,
         lastName: user[0].lastName,
+        brewery: req.body.brewery,
         ibu: req.body.ibu,
         description: req.body.description})
       .then(

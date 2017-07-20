@@ -15,10 +15,10 @@ function updatesStateBeerData(userSearchBeer) {
 function stateRender(state) {
   const { beerData } = state;
   
-    console.log(beerData);
+  console.log(beerData);
   let beerList = beerData.reviews.map(function(review, i){
     return (`
-    <li><p>${beerData.firstName} ${beerData.lastName}: ${review.comment}</p></li>
+    <li><p>${review.firstName} ${review.lastName}: ${review.comment}</p></li>
     `);
   }).join('');
     
@@ -56,20 +56,53 @@ function getApiData(beerName) {
     });
 }
 
+// User Endpoint Functions
+
+function createUser(userData) {
+  console.log(userData);
+  const opts = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST', 
+    body: JSON.stringify(userData)
+  };
+  fetch('/users', opts)
+    .then(function(res){
+      console.log(res);
+      return res.body;
+    })
+    .then(function(res) {
+      console.log(res);
+    });
+}
 // Event Listener Functions
 
 $(function(){
+  const signupForm = $('.js-signup-form');
+  const userFields = $('.js-signup-form input');
 
-  // Event Listener not working for js-review button
+  $('.js-signup-form').on('submit', function(event){
+    event.preventDefault();
+    let userData = {};
+
+    $.each(userFields, function(i, field){
+      userData[field.name] = field.value;
+    });
+    
+    createUser(userData);
+  });
+  
+  $('.js-beer-form').submit(function(event) {
+    event.preventDefault();
+    let beerName = $('#beer-name').val();
+    getApiData(beerName);
+  });
+
   $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
     console.log('clicked');
   });
 
-  $('#js-form').submit(function(event) {
-    event.preventDefault();
-    let beerName = $('#beer-name').val();
-    getApiData(beerName);
-  
-  });
 });
