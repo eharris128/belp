@@ -106,13 +106,12 @@ describe('Beer API resource', function() {
           res.body.beers.forEach(function(beer) {
             beer.should.be.a('object');
             beer.should.include.keys(
-              'id', 'name', 'abv', 'style', 'description', 'brewery', 'ibu');
+              'id', 'name', 'abv', 'reviews', 'style', 'description', 'brewery', 'ibu');
           });
           resBeer = res.body.beers[0];
           return Beer.findById(resBeer.id);
         })
         .then(function(beer) {
-
           resBeer.id.should.equal(beer.id);
           resBeer.name.should.equal(beer.name);
           resBeer.style.should.equal(beer.style);
@@ -166,18 +165,23 @@ describe('Beer API resource', function() {
     });
 
     it('should add new user', function (){
-      
+      const myNewUser = {
+        username: faker.internet.userName(),
+        password: '$2a$10$AmPJwn7FES9mV3ygK1DmvOlVHuO1oPg9idgYqXzTMjewvtp9goZF2',
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName()
+      };
       return chai.request(app)
         .post('/users')
-        .send(myTestUser)
+        .send(myNewUser)
         .then(function(res){
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.include.keys(
             'username', 'firstName', 'lastName');  
-          res.body.username.should.equal(myTestUser.username);
-          res.body.firstName.should.equal(myTestUser.firstName);
-          res.body.lastName.should.equal(myTestUser.lastName);
+          res.body.username.should.equal(myNewUser.username);
+          res.body.firstName.should.equal(myNewUser.firstName);
+          res.body.lastName.should.equal(myNewUser.lastName);
         }).then();
     });
   });
