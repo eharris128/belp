@@ -58,16 +58,40 @@ function getApiData(beerName) {
 
 // User Endpoint Functions
 
-function createUser() {
-  
+function createUser(userData) {
+  console.log(userData);
+  const opts = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST', 
+    body: JSON.stringify(userData)
+  };
+  fetch('/users', opts)
+    .then(function(res){
+      console.log(res);
+      return res.body;
+    })
+    .then(function(res) {
+      console.log(res);
+    });
 }
 // Event Listener Functions
 
 $(function(){
+  const signupForm = $('.js-signup-form');
+  const userFields = $('.js-signup-form input');
 
   $('.js-signup-form').on('submit', function(event){
     event.preventDefault();
-    alert('hello');
+    let userData = {};
+
+    $.each(userFields, function(i, field){
+      userData[field.name] = field.value;
+    });
+    
+    createUser(userData);
   });
   
   $('.js-beer-form').submit(function(event) {

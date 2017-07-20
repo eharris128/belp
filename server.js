@@ -28,6 +28,12 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // User and authorization related functions
 const strategy = new BasicStrategy(function(username, password, callback) {
   let user;
@@ -90,7 +96,6 @@ console.log(req.body);
   let {username, password, firstName, lastName} = req.body;
   username = username.trim();
   password = password.trim();
-
   // check for existing user
   return User
     .find({username})
