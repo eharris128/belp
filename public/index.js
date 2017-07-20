@@ -1,21 +1,30 @@
 'use strict';
 
 let appState = {
-  beerData: {}
+  beerData: {},
+  userLoggedIn: false
 };
 
 // State Modification Functions 
-function updatesStateBeerData(userSearchBeer) {
-  console.log(userSearchBeer);
-  appState.beerData = userSearchBeer;
-  // console.log('my app state' + appState.beerData.Name);
+
+function resetState() {
+  appState.userLoggedIn = false;
 }
 
+function updatesStateUserLogin(){
+  appState.userLoggedIn = !appState.userLoggedIn;
+}
+
+function updatesStateBeerData(userSearchBeer) {
+  appState.beerData = userSearchBeer;
+}
+
+
 // Render Functions
+
 function stateRender(state) {
+  console.log('state' + state.beerData);
   const { beerData } = state;
-  
-  console.log(beerData);
   let beerList = beerData.reviews.map(function(review, i){
     return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
@@ -59,7 +68,6 @@ function getApiData(beerName) {
 // User Endpoint Functions
 
 function createUser(userData) {
-  console.log(userData);
   const opts = {
     headers: {
       'Accept': 'application/json',
@@ -70,39 +78,39 @@ function createUser(userData) {
   };
   fetch('/users', opts)
     .then(function(res){
-      console.log(res);
       return res.body;
     })
     .then(function(res) {
-      console.log(res);
+      updatesStateUserLogin();
+      // stateRender(appState);
     });
 }
 // Event Listener Functions
 
 $(function(){
-  const signupForm = $('.js-signup-form');
-  const userFields = $('.js-signup-form input');
 
   $('.js-signup-form').on('submit', function(event){
+    resetState();
+    const userFields = $('.js-signup-form input');
     event.preventDefault();
     let userData = {};
 
     $.each(userFields, function(i, field){
       userData[field.name] = field.value;
     });
-    
     createUser(userData);
+    userFields.val('');
   });
   
   $('.js-beer-form').submit(function(event) {
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
+    $('#beer-name').val('');
   });
 
   $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
-    console.log('clicked');
   });
 
 });
