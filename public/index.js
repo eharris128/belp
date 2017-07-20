@@ -2,13 +2,15 @@
 
 let appState = {
   beerData: {},
-  userLoggedIn: false
+  userLoggedIn: false,
+  userQueryInDb: false
 };
 
 // State Modification Functions 
 
 function resetState() {
   appState.userLoggedIn = false;
+  appState.userQueryInDb = false;
 }
 
 function updatesStateUserLogin(){
@@ -26,7 +28,14 @@ function stateRender(state) {
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
 
-  if (beerData.name !== undefined) {
+  if (!state.userQueryInDb) {
+    let errorMessageTemplate = (`
+    <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
+    `);
+    $('.js-results').html(errorMessageTemplate).removeClass('hidden');
+  }
+
+  if (beerData.name !== undefined && state.userQueryInDb !== false) {
 
     let beerList = beerData.reviews.map(function(review, i){
       return (`
@@ -34,7 +43,7 @@ function stateRender(state) {
     `);
     }).join('');
     
-    let stateRenderTemplate = (`
+    let beerInfoTemplate = (`
     <h2> Beer Name: ${beerData.name}</h2
     <p> Style: ${beerData.style}</p>
     <p> ABV: ${beerData.abv}</p>
@@ -46,7 +55,7 @@ function stateRender(state) {
     <button class="js-review" type="button"> Click to leave a review </button>
     `);
 
-    $('.js-results').html(stateRenderTemplate).removeClass('hidden');
+    $('.js-results').html(beerInfoTemplate).removeClass('hidden');
   } else if ( loggedIn) {
     $('.js-loggedIn').removeClass('hidden');
   } 
@@ -64,11 +73,17 @@ function getApiData(beerName) {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
         if (currentBeer.name === beerName) {
+          appState.userQueryInDb = true;
           updatesStateBeerData(currentBeer);
           stateRender(appState);
         } 
       }
-
+      if (!appState.userQueryInDb) {
+        stateRender(appState);
+      }
+    })
+    .catch(err => {
+      console.error(err);
     });
 }
 
@@ -90,7 +105,10 @@ function createUser(userData) {
     .then(function(res) {
       updatesStateUserLogin();
       stateRender(appState);
-    });
+    })
+    .catch(err => {
+      console.err(err);
+    })
 }
 // Event Listener Functions
 
@@ -110,6 +128,7 @@ $(function(){
   });
   
   $('.js-beer-form').submit(function(event) {
+    resetState();
     event.preventDefault();
     let beerName = $('#beer-name').val();
     getApiData(beerName);
