@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 
 const should = chai.should();
 
-//const {Beer} = require('../models');
 const {Beer, User} = require('../models');
 const {app, runServer, closeServer} = require('../server');
 const {TEST_DATABASE_URL} = require('../config');
@@ -33,9 +32,6 @@ function seedBeerData() {
   return Beer.insertMany(seedData);
 }
 
-// generate an object represnting a restaurant.
-// can be used to generate seed data for db
-// or request.body data
 function generateBeerData() {
   return {
     name: faker.name.firstName(),
@@ -54,11 +50,6 @@ function generateBeerData() {
   };
 }
 
-
-// this function deletes the entire database.
-// we'll call it in an `afterEach` block below
-// to ensure  ata from one test does not stick
-// around for next one
 function tearDownDb() {
   console.warn('Deleting database');
   return mongoose.connection.dropDatabase();
@@ -82,22 +73,16 @@ describe('Beer API resource', function() {
     return closeServer();
   });
 
-  // note the use of nested `describe` blocks.
-  // this allows us to make clearer, more discrete tests that focus
-  // on proving something small
   describe('GET endpoint', function() {
 
     it('should return all existing beers', function() {
-      // need to have access to mutate and access `res` across
-      // `.then()` calls below, so declare it here so can modify in place
+
       let res;
       return chai.request(app)
         .get('/beers')
         .then(function(_res) {
-          // so subsequent .then blocks can access resp obj.
           res = _res;
           res.should.have.status(200);
-          // otherwise our db seeding didn't work
           res.body.beers.should.have.length.of.at.least(1);
           return Beer.count();
         })
@@ -108,7 +93,6 @@ describe('Beer API resource', function() {
 
 
     it('should return beers with right fields', function() {
-      // Strategy: Get back all restaurants, and ensure they have expected keys
 
       let resBeer;
       return chai.request(app)
@@ -145,10 +129,7 @@ describe('Beer API resource', function() {
   });
 
   describe('POST endpoint', function() {
-    // strategy: make a POST request with data,
-    // then prove that the restaurant we get back has
-    // right keys, and that `id` is there (which means
-    // the data was inserted into db)
+
     it('should add a new beer', function() {
 
       const newBeer = generateBeerData();
@@ -163,7 +144,6 @@ describe('Beer API resource', function() {
           res.body.should.include.keys(
             'id', 'name', 'style', 'description', 'reviews', 'brewery', 'ibu');
           res.body.name.should.equal(newBeer.name);
-          // cause Mongo should have created id on insertion
           res.body.id.should.not.be.null;
           res.body.style.should.equal(newBeer.style);
           res.body.description.should.equal(newBeer.description);
@@ -204,11 +184,6 @@ describe('Beer API resource', function() {
 
   describe('PUT endpoint', function() {
 
-    // strategy:
-    //  1. Get an existing restaurant from db
-    //  2. Make a PUT request to update that restaurant
-    //  3. Prove restaurant returned by request contains data we sent
-    //  4. Prove restaurant in db is correctly updated
     it('should update fields you send over', function() {
       const updateData = {
         name: 'fofofofofofofof',
@@ -242,12 +217,8 @@ describe('Beer API resource', function() {
   });
 
   describe('DELETE endpoint', function() {
-    // strategy:
-    //  1. get a restaurant
-    //  2. make a DELETE request for that restaurant's id
-    //  3. assert that response has right status code
-    //  4. prove that restaurant with the id doesn't exist in db anymore
-    it('delete a restaurant by id', function() {
+
+    it('delete a beer by id', function() {
 
       let beer;
 
@@ -263,10 +234,6 @@ describe('Beer API resource', function() {
           return Beer.findById(beer.id).exec();
         })
         .then(function(_beer) {
-          // when a variable's value is null, chaining `should`
-          // doesn't work. so `_beer.should.be.null` would raise
-          // an error. `should.be.null(_beer)` is how we can
-          // make assertions about a null value.
           should.not.exist(_beer);
         });
     });
