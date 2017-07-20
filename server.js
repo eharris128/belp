@@ -129,27 +129,13 @@ app.get('/', (req, res) => {
   res.sendFile('index.html');
 });
 
-// GET requests to /restaurants => return 10 restaurants
+// GET requests to /beers
 app.get('/beers', (req, res) => {
   Beer
     .find()
-    // we're limiting because restaurants db has > 25,000
-    // documents, and that's too much to process/return
     .limit(10)
-    // .populate('author')
-    .populate('user', 'firstName lastName')
-    // .populate({
-    //   path: 'reviews',
-    //   populate: {
-    //     path: 'author',
-    //     model: 'User'
-    //   }
-    // })
-    // `exec` returns a promise
+    .populate('reviews.author')
     .exec()
-    // success callback: for each restaurant we got back, we'll
-    // call the `.apiRepr` instance method we've created in
-    // models.js in order to only expose the data we want the API return.
     .then(beers => {
       res.json({
         beers: beers.map(
