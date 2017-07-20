@@ -187,8 +187,6 @@ app.post('/beers', (req, res) => {
         abv: req.body.abv,
         style: req.body.style,
         reviews: req.body.reviews,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
         brewery: req.body.brewery,
         ibu: req.body.ibu,
         description: req.body.description})

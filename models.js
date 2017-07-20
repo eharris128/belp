@@ -12,14 +12,9 @@ const beerSchema = mongoose.Schema({
   ibu: Number,
   reviews: [{
     author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    firstName: { type: String},
-    lastName: {type: String},
-    // author: { type: Number, ref: 'User'},
     date: { type: Date, default: Date.now },
     comment: String
-  }],
-  firstName: String,
-  lastName: String
+  }]
 });
 
 // myuser123 ; password
@@ -67,8 +62,6 @@ beerSchema.methods.apiRepr = function() {
     description: this.description,
     reviews: this.reviews,
     brewery: this.brewery,
-    firstName: this.firstName,
-    lastName: this.lastName,
     ibu:this.ibu
   };
 };
