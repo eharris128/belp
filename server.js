@@ -163,8 +163,6 @@ app.get('/beers', (req, res) => {
       });
 });
 
-
-// make a comment after class
 // can also request by ID
 app.get('/beers/:id', (req, res) => {
   Beer
@@ -180,11 +178,6 @@ app.get('/beers/:id', (req, res) => {
 });
 
 app.post('/beers', (req, res) => {
-  // let firstName;
-  // let lastName;
-  // User.find({_id: req.body.reviews[0].author}).then(user => {
-  //   return firstName = user[0].firstName;
-  // });
   const requiredFields = ['name', 'style', 'abv', 'description', 'reviews', 'brewery', 'ibu', ];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -194,34 +187,22 @@ app.post('/beers', (req, res) => {
       return res.status(400).send(message);
     }
   }
+  // References to user[0] need to be replaced with reference to correct user to reflect who 
+  // left a review
   User.find({_id: req.body.reviews[0].author}).then(user => {
-    console.log('ok')
-    // create map function to through the users
-    // go into reviews array and add in firstName and lastName
-    //  Beer create {
-    //   reviews: populateNames(res.body.reviews);  
-    // }
-  //console.log(typeof reviews);
-  // maybe use for each instead of map? depends on if we need to be returning something to the
-  // beer.reviews in the beer object
-    let userReviews = res.body.reviews.map(function(review, i) {
-      console.log('a review:' + review);
-      // Look up how to add new key value pairs to objects
-      // user[0] may work, need to determine how to correctly select user based on who is logged in
+    req.body.reviews.map(function(review, i) {
       review.firstName = user[0].firstName;
-      console.log('a reviewers name:' + review.firstName);
       review.lastName = user[0].lastName;
     });
-
-
 
     Beer
       .create({
         name: req.body.name,
         abv: req.body.abv,
         style: req.body.style,
-        reviews: userReviews,
-        // reviews: populateReviewsWithNames(res.body.reviews),
+        reviews: req.body.reviews,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
         brewery: req.body.brewery,
         ibu: req.body.ibu,
         description: req.body.description})
