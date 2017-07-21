@@ -139,6 +139,9 @@ function sendReviewData(userReview) {
     id: appState.searchBeerId,
     reviews: [
       {
+        author: {
+          _id: '5972272a11da9e2ac0cce544'
+        },
         comment: userReview,
         date: Date.now()
       }
@@ -180,6 +183,7 @@ function createUser(userData) {
       return res;
     })
     .then(function(res) {
+      console.log('what does a user look like: ' + res);
       if (res.status === 422) {
         renderErrorMessage(res.status);
       } else {
