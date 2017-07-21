@@ -9,10 +9,12 @@
     <title>Belp - Beer Descriptions and Reviews</title>
 </head>
 <body>
-    <header><h1>Belp - Beer Reviews By Beer Lovers</h1></header>
+
+ 
+    <header class="header"><h1>Belp - Beer Reviews By Beer Lovers</h1></header>
     <main role="main">
-        <div class="container js-starter-page">
-            <h2 class="sign-up">Sign up</h2>
+        <div class="container starter-page js-starter-page">
+            <h2 class="sign-up">Sign up to start searching for your favorite beer</h2>
             <form action="#" id="signup-form" name="signup" method="post" class="js-signup-form">
                 <fieldset>
                     <label class="input-label" for="username">Username</label>	
@@ -30,7 +32,7 @@
             <h2 class="js-loggedIn hidden">You have successfully created an account and logged in!! <br>You may now search for beer.</h2>
             <button class="js-loggedIn js-show-results-button button hidden">Click to proceed to search engine.</button>
         </div>
-      <form action="/beers" class="js-beer-form hidden">
+      <form action="/beers" class="js-beer-form beer-form hidden">
         <fieldset>
             <label class="input-label" for="beer-name">Please provide the name of a beer:</label>
             <input type="text" id="beer-name" required placeholder="Hercules Double IPA">
