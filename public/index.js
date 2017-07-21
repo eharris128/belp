@@ -3,14 +3,14 @@
 let appState = {
   beerData: {},
   userLoggedIn: false,
-  userQueryPresentInDb: false
+  userQueryInDb: false
 };
 
 // State Modification Functions 
 
 function resetState() {
   appState.userLoggedIn = false;
-  appState.userQueryPresentInDb = false;
+  appState.userQueryInDb = false;
 }
 
 function updatesStateUserLogin(){
@@ -21,31 +21,30 @@ function updatesStateBeerData(userSearchBeer) {
   appState.beerData = userSearchBeer;
 }
 
-
+function updatesStateQueryStatus (state) {
+  state.userQueryInDb = true;
+}
 // Render Functions
 
-// function showDOMStuff(state) {
-//   if state.err {
-//     //take specific render path
-//   }
+function renderErroMessage() {
+  let errorMessageTemplate = (`
+    <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
+    `);
+  $('.js-results').html(errorMessageTemplate).removeClass('hidden');
+}
 
-// }
-
-// function renderError(state){
-
-// }
 function stateRender(state) {
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
 
-  if (!state.userQueryPresentInDb) {
-    let errorMessageTemplate = (`
-    <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
-    `);
-    $('.js-results').html(errorMessageTemplate).removeClass('hidden');
-  }
+  // if (!state.userQueryInDb && beerData.name === undefined) {
+  //   let errorMessageTemplate = (`
+  //   <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
+  //   `);
+  //   $('.js-results').html(errorMessageTemplate).removeClass('hidden');
+  // }
 
-  if (beerData.name !== undefined && state.userQueryPresentInDb !== false) {
+  if (beerData.name !== undefined) {
 
     let beerList = beerData.reviews.map(function(review, i){
       return (`
@@ -80,30 +79,22 @@ function getApiData(userQuery) {
       return res.json();
     })
     .then(data => {
-      if (data.beers.includes(userQuery)) {
-        // function for successful query
-        //the line below should be made into state modification function
-        appState.userQueryPresentInDb = true;
-        updatesStateBeerData(userQuery);
-        stateRender(appState);
-      } else {
-        // function for unsuccessful query
-        stateRender(appState);
+      for (let i = 0; i < data.beers.length; i++) {
+        let currentBeer = data.beers[i];
+        if (currentBeer.name === userQuery) {
+          // create function that will perform the task listed on the below line.
+          updatesStateQueryStatus(appState);
+          updatesStateBeerData(currentBeer);
+          stateRender(appState);
+        } 
+      }
+      if (!appState.userQueryInDb) {
+        renderErroMessage();
       }
     })
     .catch(err => {
       console.error(err);
     });
-
-  //   for (let i = 0; i < data.beers.length; i++) {
-  //     let currentBeer = data.beers[i];
-
-  //   }
-  //   if (!appState.userQueryPresentInDb) {
-  //     stateRender(appState);
-  //   }
-  // })
-
 }
 
 // User Endpoint Functions
