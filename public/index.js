@@ -5,7 +5,9 @@ let appState = {
   userLoggedIn: false,
   userQueryInDb: false,
   reviewEntry: false,
-  searchBeerId: ''
+  searchBeerId: '',
+  currentUserId: '',
+  showSearchForm: false
 };
 
 // State Modification Functions 
@@ -15,12 +17,18 @@ function resetState() {
   appState.userLoggedIn = false;
   appState.userQueryInDb = false;
   appState.searchBeerId = '';
+  appState.showSearchForm = false;
 }
 
-function updatesStateUserLogin(){
+function updatesStateSearchFormStatus() {
+  appState.showSearchForm = true;
+}
+function updatesStateUserLogin() {
   appState.userLoggedIn = !appState.userLoggedIn;
 }
-
+function updatesStateUserId(userId) {
+  appState.currentUserId = userId;
+}
 function updatesStateBeerData(userSearchBeer) {
   appState.beerData = userSearchBeer;
 }
@@ -42,6 +50,10 @@ function updatesStateReviewStatus() {
 
 }
 
+function updatesStateReviewToFalse() {
+  appState.reviewEntry = false;
+}
+
 // Render Functions
 
 function renderErrorMessage(status) {
@@ -61,6 +73,11 @@ function renderErrorMessage(status) {
 }
 
 function stateRender(state) {
+  if (state.showSearchForm) {
+    $('.js-beer-form').removeClass('hidden');
+    $('.js-starter-page').addClass('hidden');
+  }
+
   $('.js-login-error').addClass('hidden');
   $('.js-loggedIn').addClass('hidden');
 
@@ -81,7 +98,7 @@ function stateRender(state) {
     $('.js-results').append(reviewEntryTemplate);
   } else if (beerData.name !== undefined) {
     
-    let beerList = beerData.reviews.map(function(review, i){
+    let beerList = beerData.reviews.map(function(review, i) {
       return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
     `);
@@ -105,10 +122,9 @@ function stateRender(state) {
   } 
 }
  
-
 // Data Retrieval functions
 
-function getApiData(userQuery) {
+function fetchBeerData(userQuery) {
   let status;
   fetch('/beers')
     .then(res => {
@@ -140,7 +156,7 @@ function sendReviewData(userReview) {
     reviews: [
       {
         author: {
-          _id: '5972272a11da9e2ac0cce544'
+          _id: appState.currentUserId
         },
         comment: userReview,
         date: Date.now()
@@ -148,9 +164,8 @@ function sendReviewData(userReview) {
     ]
 
   };
-  
-  console.log('the user review: ' + formattedReview);
-  // hard code password in for test submission and then change to cookies or something else
+
+  // Password is hardcoded in for authorization
   const opts = {
     headers: {
       'Accept': 'application/json',
@@ -162,8 +177,14 @@ function sendReviewData(userReview) {
   };
   fetch(`/beers/${appState.searchBeerId}`, opts)
     .then(function(res) {
-      console.log('does it work?');
+      updatesStateReviewToFalse();
       return res;
+    })
+    .then(function(res) {
+      fetchBeerData(appState.beerData.name);
+    })
+    .catch(err => {
+      return err;
     });
 }
 
@@ -179,35 +200,35 @@ function createUser(userData) {
     body: JSON.stringify(userData)
   };
   fetch('/users', opts)
-    .then(function(res){
-      return res;
+    .then(function(res) {
+      return res.json();
     })
     .then(function(res) {
-      console.log('what does a user look like: ' + res);
       if (res.status === 422) {
         renderErrorMessage(res.status);
       } else {
+        updatesStateUserId(res._id);
         updatesStateUserLogin();
         stateRender(appState); 
         return res;
       }
     })
-    .then()
     .catch(err => {
       return err;
     });
 }
+
 // Event Listener Functions
 
-$(function(){
+$(function() {
 
-  $('.js-signup-form').on('submit', function(event){
+  $('.js-signup-form').on('submit', function(event) {
     resetState();
     const userFields = $('.js-signup-form input');
     event.preventDefault();
     let userData = {};
 
-    $.each(userFields, function(i, field){
+    $.each(userFields, function(i, field) {
       userData[field.name] = field.value;
     });
     createUser(userData);
@@ -218,23 +239,27 @@ $(function(){
     resetState();
     event.preventDefault();
     let userQuery = $('#beer-name').val();
-    getApiData(userQuery);
+    fetchBeerData(userQuery);
     $('#beer-name').val('');
   });
 
-  $('.js-results').on('click', '.js-review', function(event){
+  $('.js-results').on('click', '.js-review', function(event) {
     event.preventDefault();
     updatesStateReviewStatus();
     stateRender(appState);
   });
 
-  $('.js-results').on('submit', '.js-review-form', function(event){
+  $('.js-results').on('submit', '.js-review-form', function(event) {
     event.preventDefault();
     let userReview =  $('#review').val();
     sendReviewData(userReview);
-    // the below line should be moved to the appropriate function
     $('#review').val('');
-    console.log('Thank you for submitting your review');
+  });
+
+  $('.js-show-results-button').on('click', function(event) {
+    event.preventDefault();
+    updatesStateSearchFormStatus();
+    stateRender(appState);
   });
   
 });
