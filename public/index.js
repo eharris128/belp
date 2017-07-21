@@ -122,7 +122,6 @@ function stateRender(state) {
   } 
 }
  
-
 // Data Retrieval functions
 
 function fetchBeerData(userQuery) {
@@ -166,7 +165,7 @@ function sendReviewData(userReview) {
 
   };
 
-  // hard code password in for test submission and then change to cookies or something else
+  // Password is hardcoded in for authorization
   const opts = {
     headers: {
       'Accept': 'application/json',
@@ -214,11 +213,11 @@ function createUser(userData) {
         return res;
       }
     })
-    .then()
     .catch(err => {
       return err;
     });
 }
+
 // Event Listener Functions
 
 $(function() {
@@ -254,7 +253,6 @@ $(function() {
     event.preventDefault();
     let userReview =  $('#review').val();
     sendReviewData(userReview);
-    // the below line should be moved to the appropriate function
     $('#review').val('');
   });
 
