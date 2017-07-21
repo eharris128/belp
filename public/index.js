@@ -4,7 +4,8 @@ let appState = {
   beerData: {},
   userLoggedIn: false,
   userQueryInDb: false,
-  reviewEntry: false
+  reviewEntry: false,
+  searchBeerId: ''
 };
 
 // State Modification Functions 
@@ -13,6 +14,7 @@ function resetState() {
   appState.reviewEntry = false;
   appState.userLoggedIn = false;
   appState.userQueryInDb = false;
+  appState.searchBeerId = '';
 }
 
 function updatesStateUserLogin(){
@@ -25,6 +27,11 @@ function updatesStateBeerData(userSearchBeer) {
 
 function updatesStateQueryStatus (state) {
   state.userQueryInDb = true;
+}
+
+function updatesStateSearchBeerId(searchBeerId) {
+  appState.searchBeerId = searchBeerId;
+    console.log('hello' +  appState.searchBeerId);
 }
 
 function updatesStateReviewStatus() {
@@ -104,7 +111,6 @@ function stateRender(state) {
 
 function getApiData(userQuery) {
   let status;
-  // let searchBeerId;
   fetch('/beers')
     .then(res => {
       status = res.status;
@@ -114,7 +120,7 @@ function getApiData(userQuery) {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
         if (currentBeer.name === userQuery) {
-          // searchBeerId = currentBeer.name;
+          updatesStateSearchBeerId(currentBeer.id);
           updatesStateQueryStatus(appState);
           updatesStateBeerData(currentBeer);
           stateRender(appState);
