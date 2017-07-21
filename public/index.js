@@ -24,26 +24,29 @@ function updatesStateBeerData(userSearchBeer) {
 function updatesStateQueryStatus (state) {
   state.userQueryInDb = true;
 }
+
 // Render Functions
 
-function renderErroMessage() {
-  let errorMessageTemplate = (`
+function renderErrorMessage(status) {
+  if (status === 200) {
+    let beerNotInDatabaseError = (`
     <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
     `);
-  $('.js-results').html(errorMessageTemplate).removeClass('hidden');
+    $('.js-results').html(beerNotInDatabaseError).removeClass('hidden');
+  } else if (status === 422) {
+    let usernameTakenError = (`
+      <h3> That username is taken, please try a different one.</h3>
+    `);
+    $('.js-login-error').html(usernameTakenError).removeClass('hidden');
+  }
 }
 
 function stateRender(state) {
+  $('.js-login-error').addClass('hidden');
+  $('.js-loggedIn').addClass('hidden');
+
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
-
-  // if (!state.userQueryInDb && beerData.name === undefined) {
-  //   let errorMessageTemplate = (`
-  //   <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
-  //   `);
-  //   $('.js-results').html(errorMessageTemplate).removeClass('hidden');
-  // }
-
   if (beerData.name !== undefined) {
 
     let beerList = beerData.reviews.map(function(review, i){
@@ -74,22 +77,23 @@ function stateRender(state) {
 // Data Retrieval functions
 
 function getApiData(userQuery) {
+  let status;
   fetch('/beers')
     .then(res => {
+      status = res.status;
       return res.json();
     })
     .then(data => {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
         if (currentBeer.name === userQuery) {
-          // create function that will perform the task listed on the below line.
           updatesStateQueryStatus(appState);
           updatesStateBeerData(currentBeer);
           stateRender(appState);
         } 
       }
       if (!appState.userQueryInDb) {
-        renderErroMessage();
+        renderErrorMessage(status);
       }
     })
     .catch(err => {
@@ -110,14 +114,21 @@ function createUser(userData) {
   };
   fetch('/users', opts)
     .then(function(res){
-      return res.body;
+      return res;
     })
     .then(function(res) {
-      updatesStateUserLogin();
-      stateRender(appState);
+      if (res.status === 422) {
+        renderErrorMessage(res.status);
+      } else {
+        updatesStateUserLogin();
+        stateRender(appState);
+        return res;
+      }
     })
+    .then()
     .catch(err => {
-      console.err(err);
+      console.log(err);
+      return err;
     });
 }
 // Event Listener Functions
