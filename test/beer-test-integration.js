@@ -188,17 +188,19 @@ describe('Beer API resource', function() {
 
   describe('PUT endpoint', function() {
 
-    it('should update fields you send over', function() {
+    it.only('should update fields you send over', function() {
       const updateData = {
-        name: 'fofofofofofofof',
-        style: 'futuristic fusion'
+        reviews: []
       };
+      // const updateData = {
+      //   name: 'fofofofofofofof',
+      //   style: 'futuristic fusion'
+      // };
 
       return Beer
         .findOne()
         .exec()
         .then(function(beer) {
-          // console.log('hello' + beer.reviews[]);
           
           updateData.id = beer.id;
           // make request then inspect it to make sure it reflects
@@ -214,8 +216,8 @@ describe('Beer API resource', function() {
           return Beer.findById(updateData.id).exec();
         })
         .then(function(beer) {
-          beer.name.should.equal(updateData.name);
-          beer.style.should.equal(updateData.style);
+          // beer.name.should.equal(updateData.name);
+          // beer.style.should.equal(updateData.style);
         });
     });
   });
