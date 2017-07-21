@@ -28,7 +28,12 @@ function updatesStateQueryStatus (state) {
 }
 
 function updatesStateReviewStatus() {
-  appState.reviewEntry = true;
+  if (!appState.reviewEntry) {
+    appState.reviewEntry = true;
+  } else if (appState.reviewEntry) {
+    appState.reviewEntry = false;
+  }
+
 }
 
 // Render Functions
@@ -43,7 +48,9 @@ function renderErrorMessage(status) {
     let usernameTakenError = (`
       <h3> That username is taken, please try a different one.</h3>
     `);
+   
     $('.js-login-error').html(usernameTakenError).removeClass('hidden');
+    $('.js-loggedIn').addClass('hidden');
   }
 }
 
@@ -67,7 +74,7 @@ function stateRender(state) {
     `);
     $('.js-results').append(reviewEntryTemplate);
   } else if (beerData.name !== undefined) {
-    console.log(beerData);
+    
     let beerList = beerData.reviews.map(function(review, i){
       return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
@@ -97,6 +104,7 @@ function stateRender(state) {
 
 function getApiData(userQuery) {
   let status;
+  // let searchBeerId;
   fetch('/beers')
     .then(res => {
       status = res.status;
@@ -106,6 +114,7 @@ function getApiData(userQuery) {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
         if (currentBeer.name === userQuery) {
+          // searchBeerId = currentBeer.name;
           updatesStateQueryStatus(appState);
           updatesStateBeerData(currentBeer);
           stateRender(appState);
@@ -120,18 +129,20 @@ function getApiData(userQuery) {
     });
 }
 
-function sendReviewData(userReview) {
-  // console.log('the user review: ' + userReview);
-    // hard code password in for test submission and then change to cookies or something else
-  const opts = {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: 'PUT',
-    body: JSON.stringify(userReview) 
-  };
-}
+// function sendReviewData(userReview) {
+//   // console.log('the user review: ' + userReview);
+//   // hard code password in for test submission and then change to cookies or something else
+//   const opts = {
+//     headers: {
+//       'Accept': 'application/json',
+//       'Content-Type': 'application/json',
+//       'Authorization': 'Basic dGVzdHVzZXI6cGFzc3dvcmQ='
+//     },
+//     method: 'PUT',
+//     body: JSON.stringify(userReview) 
+//   };
+//   fetch(`/beer${}`)
+// }
 
 // User Endpoint Functions
 
@@ -153,7 +164,7 @@ function createUser(userData) {
         renderErrorMessage(res.status);
       } else {
         updatesStateUserLogin();
-        stateRender(appState);
+        stateRender(appState); 
         return res;
       }
     })
