@@ -67,7 +67,7 @@ function stateRender(state) {
     `);
     $('.js-results').append(reviewEntryTemplate);
   } else if (beerData.name !== undefined) {
-
+    console.log(beerData);
     let beerList = beerData.reviews.map(function(review, i){
       return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
@@ -121,7 +121,16 @@ function getApiData(userQuery) {
 }
 
 function sendReviewData(userReview) {
-  console.log('the user review: ' + userReview);
+  // console.log('the user review: ' + userReview);
+    // hard code password in for test submission and then change to cookies or something else
+  const opts = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'PUT',
+    body: JSON.stringify(userReview) 
+  };
 }
 
 // User Endpoint Functions
