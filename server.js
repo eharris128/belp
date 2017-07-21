@@ -198,9 +198,11 @@ app.put('/beers/:id',
         `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
       console.error(message);
-      res.status(400).json({message: message});
+      return res.status(400).json({message: message});
     }
-
+    if(req.body.reviews.length === 0) {
+      return res.status(400).json({message: 'Review is required'});
+    }
     Beer
       .findByIdAndUpdate(req.params.id, {$push: {reviews: req.body.reviews[0]}}, {new: true})
       .exec()
