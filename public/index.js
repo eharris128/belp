@@ -5,7 +5,8 @@ let appState = {
   userLoggedIn: false,
   userQueryInDb: false,
   reviewEntry: false,
-  searchBeerId: ''
+  searchBeerId: '',
+  currentUserId: ''
 };
 
 // State Modification Functions 
@@ -20,7 +21,9 @@ function resetState() {
 function updatesStateUserLogin(){
   appState.userLoggedIn = !appState.userLoggedIn;
 }
-
+function updatesStateUserId(userId) {
+  appState.currentUserId = userId;
+}
 function updatesStateBeerData(userSearchBeer) {
   appState.beerData = userSearchBeer;
 }
@@ -140,7 +143,7 @@ function sendReviewData(userReview) {
     reviews: [
       {
         author: {
-          _id: '5972272a11da9e2ac0cce544'
+          _id: appState.currentUserId
         },
         comment: userReview,
         date: Date.now()
@@ -148,8 +151,7 @@ function sendReviewData(userReview) {
     ]
 
   };
-  
-  console.log('the user review: ' + formattedReview);
+
   // hard code password in for test submission and then change to cookies or something else
   const opts = {
     headers: {
@@ -162,7 +164,7 @@ function sendReviewData(userReview) {
   };
   fetch(`/beers/${appState.searchBeerId}`, opts)
     .then(function(res) {
-      console.log('does it work?');
+      stateRender(appState);
       return res;
     });
 }
@@ -180,13 +182,13 @@ function createUser(userData) {
   };
   fetch('/users', opts)
     .then(function(res){
-      return res;
+      return res.json();
     })
     .then(function(res) {
-      console.log('what does a user look like: ' + res);
       if (res.status === 422) {
         renderErrorMessage(res.status);
       } else {
+        updatesStateUserId(res._id);
         updatesStateUserLogin();
         stateRender(appState); 
         return res;
@@ -234,7 +236,6 @@ $(function(){
     sendReviewData(userReview);
     // the below line should be moved to the appropriate function
     $('#review').val('');
-    console.log('Thank you for submitting your review');
   });
   
 });
