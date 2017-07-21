@@ -203,7 +203,8 @@ app.put('/beers/:id',
     // we only support a subset of fields being updateable.
     // if the user sent over any of the updatableFields, we udpate those values
     // in document
-    
+    console.log('the data format that we want: ' + JSON.stringify(req.body.reviews[0]));
+
     Beer
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
       .findByIdAndUpdate(req.params.id, {$push: {reviews: req.body.reviews[0]}}, {new: true})

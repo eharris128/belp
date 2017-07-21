@@ -31,7 +31,6 @@ function updatesStateQueryStatus (state) {
 
 function updatesStateSearchBeerId(searchBeerId) {
   appState.searchBeerId = searchBeerId;
-    console.log('hello' +  appState.searchBeerId);
 }
 
 function updatesStateReviewStatus() {
@@ -135,20 +134,35 @@ function getApiData(userQuery) {
     });
 }
 
-// function sendReviewData(userReview) {
-//   // console.log('the user review: ' + userReview);
-//   // hard code password in for test submission and then change to cookies or something else
-//   const opts = {
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json',
-//       'Authorization': 'Basic dGVzdHVzZXI6cGFzc3dvcmQ='
-//     },
-//     method: 'PUT',
-//     body: JSON.stringify(userReview) 
-//   };
-//   fetch(`/beer${}`)
-// }
+function sendReviewData(userReview) {
+  let formattedReview = {
+    id: appState.searchBeerId,
+    reviews: [
+      {
+        comment: userReview,
+        date: Date.now()
+      }
+    ]
+
+  };
+  
+  console.log('the user review: ' + formattedReview);
+  // hard code password in for test submission and then change to cookies or something else
+  const opts = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic dGVzdHVzZXI6cGFzc3dvcmQ='
+    },
+    method: 'PUT',
+    body: JSON.stringify(formattedReview) 
+  };
+  fetch(`/beers/${appState.searchBeerId}`, opts)
+    .then(function(res) {
+      console.log('does it work?');
+      return res;
+    });
+}
 
 // User Endpoint Functions
 
