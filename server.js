@@ -185,6 +185,13 @@ app.post('/beers', (req, res) => {
 app.put('/beers/:id', 
   passport.authenticate('basic', {session: false}),
   (req, res) => {
+
+    // console.log('the req'+ req.headers.authorization);
+    // console.log('the req user'+ req.user);
+
+    // req.user contains the key value pair of _id : 12345 ; where the number is the ObjectId
+    // This id can be used to query for the appropriate review to be updated by a logged in user
+
   // ensure that the id in the request path and the one in request body match
     if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
       const message = (
@@ -193,12 +200,13 @@ app.put('/beers/:id',
       console.error(message);
       res.status(400).json({message: message});
     }
-
     // we only support a subset of fields being updateable.
     // if the user sent over any of the updatableFields, we udpate those values
     // in document
     const toUpdate = {};
-    const updateableFields = ['name', 'style', 'description', 'reviews', 'brewery', 'ibu'];
+    // Switch back to having updateablefields set to the below array if needed for testing
+    // const updateableFields = ['name', 'style', 'description', 'reviews', 'brewery', 'ibu'];
+    const updateableFields = ['reviews'];
 
     updateableFields.forEach(field => {
       if (field in req.body) {
@@ -206,11 +214,18 @@ app.put('/beers/:id',
       }
     });
 
+    // Maybe change updateable fields to ['reviews']
+    // Alter.findByIdAndUpdate from setting to pushing to the reviews array
+  
     Beer
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-      .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
+      .findByIdAndUpdate(req.params.id, {$push: {reviews: toUpdate.reviews}}, {new: true})
       .exec()
-      .then(updatedBeer => res.status(204).json(updatedBeer.apiRepr()))
+      .then(updatedBeer => {
+        console.log('hello world' + toUpdate.reviews);
+        res.status(204).json(updatedBeer.apiRepr());
+      })
+    
       .catch(err => res.status(500).json({message: 'Internal server error'}));
 
   });

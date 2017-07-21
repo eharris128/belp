@@ -2,13 +2,17 @@
 
 let appState = {
   beerData: {},
-  userLoggedIn: false
+  userLoggedIn: false,
+  userQueryInDb: false,
+  reviewEntry: false
 };
 
 // State Modification Functions 
 
 function resetState() {
+  appState.reviewEntry = false;
   appState.userLoggedIn = false;
+  appState.userQueryInDb = false;
 }
 
 function updatesStateUserLogin(){
@@ -19,22 +23,58 @@ function updatesStateBeerData(userSearchBeer) {
   appState.beerData = userSearchBeer;
 }
 
+function updatesStateQueryStatus (state) {
+  state.userQueryInDb = true;
+}
+
+function updatesStateReviewStatus() {
+  appState.reviewEntry = true;
+}
 
 // Render Functions
 
+function renderErrorMessage(status) {
+  if (status === 200) {
+    let beerNotInDatabaseError = (`
+    <h3> The beer you searched for does not appear to be in the database. <br> Please try again. </h3>
+    `);
+    $('.js-results').html(beerNotInDatabaseError).removeClass('hidden');
+  } else if (status === 422) {
+    let usernameTakenError = (`
+      <h3> That username is taken, please try a different one.</h3>
+    `);
+    $('.js-login-error').html(usernameTakenError).removeClass('hidden');
+  }
+}
+
 function stateRender(state) {
+  $('.js-login-error').addClass('hidden');
+  $('.js-loggedIn').addClass('hidden');
+
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
+  const reviewEntry = state.reviewEntry;
 
-  if (beerData.name !== undefined) {
-
+  if (reviewEntry) {
+    let reviewEntryTemplate = (`
+      <form action="#" id="review-form" name="reviewForm" class="js-review-form">
+			<fieldset>
+				<label class="input-label" for="review">Please leave your review below: </label>
+				<input class="input-box" type="text" name="review" id="review" required placeholder="I really enjoyed...">
+			</fieldset>
+			<button class ="button submit-button" type="submit">Submit Review</button>
+		</form>
+    `);
+    $('.js-results').append(reviewEntryTemplate);
+  } else if (beerData.name !== undefined) {
+    console.log(beerData);
     let beerList = beerData.reviews.map(function(review, i){
       return (`
     <li><p>${review.author.firstName} ${review.author.lastName}: ${review.comment}</p></li>
     `);
     }).join('');
     
-    let stateRenderTemplate = (`
+    let beerInfoTemplate = (`
     <h2> Beer Name: ${beerData.name}</h2
     <p> Style: ${beerData.style}</p>
     <p> ABV: ${beerData.abv}</p>
@@ -46,7 +86,7 @@ function stateRender(state) {
     <button class="js-review" type="button"> Click to leave a review </button>
     `);
 
-    $('.js-results').html(stateRenderTemplate).removeClass('hidden');
+    $('.js-results').html(beerInfoTemplate).removeClass('hidden');
   } else if ( loggedIn) {
     $('.js-loggedIn').removeClass('hidden');
   } 
@@ -55,21 +95,42 @@ function stateRender(state) {
 
 // Data Retrieval functions
 
-function getApiData(beerName) {
+function getApiData(userQuery) {
+  let status;
   fetch('/beers')
     .then(res => {
+      status = res.status;
       return res.json();
     })
     .then(data => {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
-        if (currentBeer.name === beerName) {
+        if (currentBeer.name === userQuery) {
+          updatesStateQueryStatus(appState);
           updatesStateBeerData(currentBeer);
           stateRender(appState);
         } 
       }
-
+      if (!appState.userQueryInDb) {
+        renderErrorMessage(status);
+      }
+    })
+    .catch(err => {
+      console.error(err);
     });
+}
+
+function sendReviewData(userReview) {
+  // console.log('the user review: ' + userReview);
+    // hard code password in for test submission and then change to cookies or something else
+  const opts = {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'PUT',
+    body: JSON.stringify(userReview) 
+  };
 }
 
 // User Endpoint Functions
@@ -85,11 +146,20 @@ function createUser(userData) {
   };
   fetch('/users', opts)
     .then(function(res){
-      return res.body;
+      return res;
     })
     .then(function(res) {
-      updatesStateUserLogin();
-      stateRender(appState);
+      if (res.status === 422) {
+        renderErrorMessage(res.status);
+      } else {
+        updatesStateUserLogin();
+        stateRender(appState);
+        return res;
+      }
+    })
+    .then()
+    .catch(err => {
+      return err;
     });
 }
 // Event Listener Functions
@@ -110,14 +180,26 @@ $(function(){
   });
   
   $('.js-beer-form').submit(function(event) {
+    resetState();
     event.preventDefault();
-    let beerName = $('#beer-name').val();
-    getApiData(beerName);
+    let userQuery = $('#beer-name').val();
+    getApiData(userQuery);
     $('#beer-name').val('');
   });
 
   $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
+    updatesStateReviewStatus();
+    stateRender(appState);
   });
 
+  $('.js-results').on('submit', '.js-review-form', function(event){
+    event.preventDefault();
+    let userReview =  $('#review').val();
+    sendReviewData(userReview);
+    // the below line should be moved to the appropriate function
+    $('#review').val('');
+    console.log('Thank you for submitting your review');
+  });
+  
 });
