@@ -3,12 +3,14 @@
 let appState = {
   beerData: {},
   userLoggedIn: false,
-  userQueryInDb: false
+  userQueryInDb: false,
+  reviewEntry: false
 };
 
 // State Modification Functions 
 
 function resetState() {
+  appState.reviewEntry = false;
   appState.userLoggedIn = false;
   appState.userQueryInDb = false;
 }
@@ -23,6 +25,10 @@ function updatesStateBeerData(userSearchBeer) {
 
 function updatesStateQueryStatus (state) {
   state.userQueryInDb = true;
+}
+
+function updatesStateReviewStatus() {
+  appState.reviewEntry = true;
 }
 
 // Render Functions
@@ -47,7 +53,20 @@ function stateRender(state) {
 
   const { beerData } = state;
   const loggedIn =  state.userLoggedIn;
-  if (beerData.name !== undefined) {
+  const reviewEntry = state.reviewEntry;
+
+  if (reviewEntry) {
+    let reviewEntryTemplate = (`
+      <form action="#" id="review-form" name="reviewForm" class="js-review-form">
+			<fieldset>
+				<label class="input-label" for="review">Please leave your review below: </label>
+				<input class="input-box" type="text" name="review" id="review" required placeholder="I really enjoyed...">
+			</fieldset>
+			<button class ="button submit-button" type="submit">Submit Review</button>
+		</form>
+    `);
+    $('.js-results').append(reviewEntryTemplate);
+  } else if (beerData.name !== undefined) {
 
     let beerList = beerData.reviews.map(function(review, i){
       return (`
@@ -99,6 +118,10 @@ function getApiData(userQuery) {
     .catch(err => {
       console.error(err);
     });
+}
+
+function sendReviewData(userReview) {
+  console.log('the user review: ' + userReview);
 }
 
 // User Endpoint Functions
@@ -157,6 +180,17 @@ $(function(){
 
   $('.js-results').on('click', '.js-review', function(event){
     event.preventDefault();
+    updatesStateReviewStatus();
+    stateRender(appState);
   });
 
+  $('.js-results').on('submit', '.js-review-form', function(event){
+    event.preventDefault();
+    let userReview =  $('#review').val();
+    sendReviewData(userReview);
+    // the below line should be moved to the appropriate function
+    $('#review').val('');
+    console.log('Thank you for submitting your review');
+  });
+  
 });
