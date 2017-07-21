@@ -188,7 +188,7 @@ describe('Beer API resource', function() {
 
   describe('PUT endpoint', function() {
 
-    it.only('should update fields you send over', function() {
+    it('should update fields you send over', function() {
       const updateData = {
         reviews: []
       };
