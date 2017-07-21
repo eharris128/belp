@@ -203,26 +203,12 @@ app.put('/beers/:id',
     // we only support a subset of fields being updateable.
     // if the user sent over any of the updatableFields, we udpate those values
     // in document
-    const toUpdate = {};
-    // Switch back to having updateablefields set to the below array if needed for testing
-    // const updateableFields = ['name', 'style', 'description', 'reviews', 'brewery', 'ibu'];
-    const updateableFields = ['reviews'];
-
-    updateableFields.forEach(field => {
-      if (field in req.body) {
-        toUpdate[field] = req.body[field];
-      }
-    });
-
-    // Maybe change updateable fields to ['reviews']
-    // Alter.findByIdAndUpdate from setting to pushing to the reviews array
-  
+    
     Beer
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-      .findByIdAndUpdate(req.params.id, {$push: {reviews: toUpdate.reviews}}, {new: true})
+      .findByIdAndUpdate(req.params.id, {$push: {reviews: req.body.reviews[0]}}, {new: true})
       .exec()
       .then(updatedBeer => {
-        console.log('hello world' + toUpdate.reviews);
         res.status(204).json(updatedBeer.apiRepr());
       })
     
