@@ -18,7 +18,6 @@ if (localStorage.loginHash) {
 }
 
 function resetState() {
-  console.log('state reset' + appState.reviewEntry);
   appState.reviewEntry = false;
   appState.userLoggedIn = false;
   appState.userQueryInDb = false;
@@ -35,12 +34,6 @@ function updatesStateUserLogin() {
 }
 function updatesStatePreviousUserLogin() {
   appState.previousUserLoggedIn = true;
-}
-function userLogout() {
-  delete localStorage.loginHash;
-  // appState.beerData = {};
-  appState.previousUserLoggedIn = false;
-  appState.userLoggedOut = true;
 }
 function updatesStateUserId(userId) {
   appState.currentUserId = userId;
@@ -88,14 +81,6 @@ function renderErrorMessage(status) {
 }
 
 function stateRender(state) {
-  // console.log('current state: ' + JSON.stringify(state))
-  // console.log('User is now logged in: ' + state.userLoggedIn);
-  // console.log('Previous User is now logged in: ' + state.previousUserLoggedIn);
-  // console.log('This should be null on second login' + state.userLoggedOut);
-  if (state.showSearchForm) {
-    $('.js-beer-form').removeClass('hidden');
-    $('.js-starter-page').addClass('hidden');
-  }
 
   $('.js-login-error').addClass('hidden');
   $('.js-loggedIn').addClass('hidden');
@@ -104,6 +89,15 @@ function stateRender(state) {
   const loggedIn = state.userLoggedIn;
   const previousUserLoggedIn = state.previousUserLoggedIn;
   const reviewEntry = state.reviewEntry;
+
+  if (state.userLoggedOut) {
+    $('.js-login-page').removeClass('hidden');
+    $('.js-signup-form').removeClass('hidden');
+    $('.js-beer-form').addClass('hidden');
+    $('.js-previousUserLoggedIn').addClass('hidden');
+    $('.js-results').addClass('hidden');
+    $('.js-logout-button').addClass('hidden');
+  }
 
   if (reviewEntry) {
     let reviewEntryTemplate = `
@@ -144,6 +138,7 @@ function stateRender(state) {
     $('.js-show-results-button').removeClass('hidden');
     $('.js-logout-button').removeClass('hidden');
   } else if (previousUserLoggedIn) {
+    $('.js-starter-page').removeClass('hidden');
     $('.js-previousUserLoggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
     $('.js-login-page').addClass('hidden');
@@ -151,15 +146,9 @@ function stateRender(state) {
     $('.js-signup-message').addClass('hidden');
     $('.js-logout-button').removeClass('hidden');
   }
-
-  if (state.userLoggedOut) {
-    $('.js-login-page').removeClass('hidden');
-    $('.js-signup-form').removeClass('hidden');
-    $('.js-beer-form').addClass('hidden');
-    $('.js-previousUserLoggedIn').addClass('hidden');
-    $('.js-results').addClass('hidden');
-    $('.js-logout-button').addClass('hidden');
-    // return null;
+  if (state.showSearchForm) {
+    $('.js-beer-form').removeClass('hidden');
+    $('.js-starter-page').addClass('hidden');
   }
 }
 
@@ -228,9 +217,17 @@ function sendReviewData(userReview) {
     });
 }
 
-// User Endpoint Functions
+// User Functions
+function userLogout() {
+  delete localStorage.loginHash;
+  appState.beerData = {};
+  appState.previousUserLoggedIn = false;
+  appState.userLoggedOut = true;
+  $('.js-show-results-button').addClass('hidden');
+}
+
 function loginUser(userData) {
-  const loginHash = btoa(userData.username + ':' + userData.password); //we are passing this in to use the Hash on 198
+  const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
     headers: {
       Accept: 'application/json',
@@ -247,10 +244,9 @@ function loginUser(userData) {
       if (res.status === 422) {
         renderErrorMessage(res.status);
       } else {
-        // These are the function calls that were made after the code review. Need to confirm logic flow
+        localStorage.loginHash = loginHash;
         updatesStateUserId(res._id);
         updatesStatePreviousUserLogin();
-        // updatesStateUserLogin();
         $('.js-demo').addClass('hidden');
         stateRender(appState);
         return res;
@@ -260,6 +256,7 @@ function loginUser(userData) {
       return err;
     });
 }
+
 function createUser(userData) {
   const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
@@ -295,7 +292,7 @@ function createUser(userData) {
 // Event Listener Functions
 
 $(function() {
-  // stateRender(appState);
+  stateRender(appState);
   $('.js-logout-button').on('click', function(event) {
     resetState();
     event.preventDefault();
