@@ -18,11 +18,13 @@ if (localStorage.loginHash) {
 }
 
 function resetState() {
+  console.log('state reset' + appState.reviewEntry);
   appState.reviewEntry = false;
   appState.userLoggedIn = false;
   appState.userQueryInDb = false;
   appState.searchBeerId = '';
   appState.showSearchForm = false;
+  appState.userLoggedOut = null;
 }
 
 function updatesStateSearchFormStatus() {
@@ -36,6 +38,7 @@ function updatesStatePreviousUserLogin() {
 }
 function userLogout() {
   delete localStorage.loginHash;
+  // appState.beerData = {};
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
 }
@@ -85,14 +88,10 @@ function renderErrorMessage(status) {
 }
 
 function stateRender(state) {
-  console.log('User is now logged in: ' + state.userLoggedIn);
-  console.log('Previous User is now logged in: ' + state.previousUserLoggedIn);
-  if (state.userLoggedOut) {
-    $('.js-login-page').removeClass('hidden');
-    $('.js-signup-form').removeClass('hidden');
-    $('.js-previousUserLoggedIn').addClass('hidden');
-  }
-
+  // console.log('current state: ' + JSON.stringify(state))
+  // console.log('User is now logged in: ' + state.userLoggedIn);
+  // console.log('Previous User is now logged in: ' + state.previousUserLoggedIn);
+  // console.log('This should be null on second login' + state.userLoggedOut);
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
     $('.js-starter-page').addClass('hidden');
@@ -151,6 +150,16 @@ function stateRender(state) {
     $('.js-signup-form').addClass('hidden');
     $('.js-signup-message').addClass('hidden');
     $('.js-logout-button').removeClass('hidden');
+  }
+
+  if (state.userLoggedOut) {
+    $('.js-login-page').removeClass('hidden');
+    $('.js-signup-form').removeClass('hidden');
+    $('.js-beer-form').addClass('hidden');
+    $('.js-previousUserLoggedIn').addClass('hidden');
+    $('.js-results').addClass('hidden');
+    $('.js-logout-button').addClass('hidden');
+    // return null;
   }
 }
 
