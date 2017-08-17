@@ -8,7 +8,8 @@ let appState = {
   reviewEntry: false,
   searchBeerId: '',
   currentUserId: '',
-  showSearchForm: false
+  showSearchForm: false,
+  userLoggedOut: null
 };
 
 // State Modification Functions
@@ -32,6 +33,11 @@ function updatesStateUserLogin() {
 }
 function updatesStatePreviousUserLogin() {
   appState.previousUserLoggedIn = true;
+}
+function userLogout() {
+  delete localStorage.loginHash;
+  appState.previousUserLoggedIn = false;
+  appState.userLoggedOut = true;
 }
 function updatesStateUserId(userId) {
   appState.currentUserId = userId;
@@ -81,6 +87,12 @@ function renderErrorMessage(status) {
 function stateRender(state) {
   console.log('User is now logged in: ' + state.userLoggedIn);
   console.log('Previous User is now logged in: ' + state.previousUserLoggedIn);
+  if (state.userLoggedOut) {
+    $('.js-login-page').removeClass('hidden');
+    $('.js-signup-form').removeClass('hidden');
+    $('.js-previousUserLoggedIn').addClass('hidden');
+  }
+
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
     $('.js-starter-page').addClass('hidden');
@@ -131,12 +143,14 @@ function stateRender(state) {
   } else if (loggedIn) {
     $('.js-loggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
+    $('.js-logout-button').removeClass('hidden');
   } else if (previousUserLoggedIn) {
     $('.js-previousUserLoggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
     $('.js-login-page').addClass('hidden');
     $('.js-signup-form').addClass('hidden');
     $('.js-signup-message').addClass('hidden');
+    $('.js-logout-button').removeClass('hidden');
   }
 }
 
@@ -237,7 +251,7 @@ function loginUser(userData) {
     });
 }
 function createUser(userData) {
-    const loginHash = btoa(userData.username + ':' + userData.password);
+  const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
     headers: {
       Accept: 'application/json',
@@ -257,6 +271,7 @@ function createUser(userData) {
         localStorage.loginHash = loginHash;
         updatesStateUserId(res._id);
         updatesStateUserLogin();
+        $('.js-login-page').addClass('hidden');
         stateRender(appState);
         return res;
       }
@@ -269,6 +284,14 @@ function createUser(userData) {
 // Event Listener Functions
 
 $(function() {
+  // stateRender(appState);
+  $('.js-logout-button').on('click', function(event) {
+    resetState();
+    event.preventDefault();
+    userLogout();
+    stateRender(appState);
+  });
+
   $('.js-login-form').on('submit', function(event) {
     resetState();
     const userFields = $('.js-login-form input');
