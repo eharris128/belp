@@ -242,6 +242,7 @@ function loginUser(userData) {
         updatesStateUserId(res._id);
         updatesStatePreviousUserLogin();
         // updatesStateUserLogin();
+        $('.js-demo').addClass('hidden');
         stateRender(appState);
         return res;
       }
@@ -272,6 +273,7 @@ function createUser(userData) {
         updatesStateUserId(res._id);
         updatesStateUserLogin();
         $('.js-login-page').addClass('hidden');
+        $('.js-demo').addClass('hidden');
         stateRender(appState);
         return res;
       }
