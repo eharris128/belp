@@ -13,7 +13,7 @@ fieldset {
 body {
   text-align: center;
   /*background-color: #6A381F;*/
-  background-image: url("/img/beer.jpg")
+    background-image: url("/img/beer.jpg")  
 }
 
 .header {
