@@ -81,7 +81,7 @@ function renderErrorMessage(status) {
 }
 
 function stateRender(state) {
-
+  console.log('when does this become undefined' + appState.currentUserId);
   $('.js-login-error').addClass('hidden');
   $('.js-loggedIn').addClass('hidden');
 
@@ -181,19 +181,41 @@ function fetchBeerData(userQuery) {
 }
 
 function sendReviewData(userReview) {
-  let formattedReview = {
-    id: appState.searchBeerId,
-    reviews: [
-      {
-        author: {
-          _id: appState.currentUserId
-        },
-        comment: userReview,
-        date: Date.now()
-      }
-    ]
-  };
+  let formattedReview;
+  if (!localStorage.userId) {
+    formattedReview = {
+      id: appState.searchBeerId,
+      reviews: [
+        {
+          author: {
+            _id: appState.currentUserId
+          },
+          comment: userReview,
+          date: Date.now()
+        }
+      ]
+    };
+  } else if (localStorage.userId) {
+    formattedReview = {
+      id: appState.searchBeerId,
+      reviews: [
+        {
+          author: {
+            _id: localStorage.userId
+          },
+          comment: userReview,
+          date: Date.now()
+        }
+      ]
+    };
+  }
 
+  console.log(
+    'this is what we need to set author._id to ' + localStorage.userId
+  );
+  // console.log(' the problem is here: ' + appState.searchBeerId);
+  // console.log(' the problem is here: ' + localStorage.loginHash);
+  console.log(' I bet this is undefined ' + appState.currentUserId);
   // Password is hardcoded in for authorization
   const opts = {
     headers: {
@@ -220,6 +242,7 @@ function sendReviewData(userReview) {
 // User Functions
 function userLogout() {
   delete localStorage.loginHash;
+  delete localStorage.userId;
   appState.beerData = {};
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
@@ -245,6 +268,7 @@ function loginUser(userData) {
         renderErrorMessage(res.status);
       } else {
         localStorage.loginHash = loginHash;
+        localStorage.userId = res._id;
         updatesStateUserId(res._id);
         updatesStatePreviousUserLogin();
         $('.js-demo').addClass('hidden');
