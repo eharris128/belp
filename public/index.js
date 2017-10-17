@@ -95,7 +95,7 @@ function stateRender(state) {
     $('.js-beer-form').addClass('hidden');
     $('.js-info').addClass('hidden');
     $('.js-previousUserLoggedIn').addClass('hidden');
-        $('.js-info').addClass('hidden');
+    $('.js-info').addClass('hidden');
     $('.js-results').addClass('hidden');
     $('.js-logout-button').addClass('hidden');
   }
@@ -135,12 +135,10 @@ function stateRender(state) {
 
     $('.js-results').html(beerInfoTemplate).removeClass('hidden');
   } else if (loggedIn) {
-    console.log("This is being executed?");
     $('.js-loggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
     $('.js-logout-button').removeClass('hidden');
   } else if (previousUserLoggedIn) {
-        console.log("Or this is being executed?");
     $('.js-starter-page').removeClass('hidden');
     $('.js-previousUserLoggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
@@ -148,6 +146,7 @@ function stateRender(state) {
     $('.js-signup-form').addClass('hidden');
     $('.js-signup-message').addClass('hidden');
     $('.js-logout-button').removeClass('hidden');
+    $('.js-demo').addClass('hidden');
   }
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
@@ -217,18 +216,11 @@ function sendReviewData(userReview) {
     };
   }
 
-  console.log(
-    'this is what we need to set author._id to ' + localStorage.userId
-  );
-  // console.log(' the problem is here: ' + appState.searchBeerId);
-  // console.log(' the problem is here: ' + localStorage.loginHash);
-  console.log(' I bet this is undefined ' + appState.currentUserId);
-  // Password is hardcoded in for authorization
   const opts = {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: 'Basic ' + localStorage.loginHash //connect all of the endpoints that connect to the backend
+      Authorization: 'Basic ' + localStorage.loginHash 
     },
     method: 'PUT',
     body: JSON.stringify(formattedReview)
@@ -254,7 +246,6 @@ function userLogout() {
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
   $('.js-show-results-button').addClass('hidden');
-  // $('.js-logout').addClass('hidden');
   $('.js-demo').removeClass('hidden');
 }
 
