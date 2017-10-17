@@ -65,3 +65,7 @@ form {
 ul {
   list-style: none;
 }
+
+.logout-button {
+  color: blue;
+}

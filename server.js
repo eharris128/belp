@@ -239,6 +239,7 @@ app.use('*', function(req, res) {
 let server;
 
 function runServer(databaseUrl = DATABASE_URL, port = PORT) {
+  console.log('Our database url in run Server function: ', databaseUrl);
   return new Promise((resolve, reject) => {
     mongoose.connect(databaseUrl, err => {
       if (err) {

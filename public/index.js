@@ -81,7 +81,6 @@ function renderErrorMessage(status) {
 }
 
 function stateRender(state) {
-  console.log('when does this become undefined' + appState.currentUserId);
   $('.js-login-error').addClass('hidden');
   $('.js-loggedIn').addClass('hidden');
 
@@ -164,7 +163,9 @@ function fetchBeerData(userQuery) {
     .then(data => {
       for (let i = 0; i < data.beers.length; i++) {
         let currentBeer = data.beers[i];
-        if (currentBeer.name === userQuery) {
+        console.log('Data: ', currentBeer.name);
+        console.log('User query: ', userQuery);
+        if (currentBeer.name.toLowerCase() === userQuery.toLowerCase()) {
           updatesStateSearchBeerId(currentBeer.id);
           updatesStateQueryStatus(appState);
           updatesStateBeerData(currentBeer);
@@ -247,9 +248,11 @@ function userLogout() {
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
   $('.js-show-results-button').addClass('hidden');
+  $('.js-demo').removeClass('hidden');
 }
 
 function loginUser(userData) {
+  console.log('Lets login', userData);
   const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
     headers: {
@@ -336,6 +339,12 @@ $(function() {
     loginUser(userData);
     userFields.val('');
   });
+
+  $('.js-demo').on('click', function(event) {
+    resetState();
+    loginUser({username: 'username', password: 'password'});
+  });
+
   $('.js-signup-form').on('submit', function(event) {
     resetState();
     const userFields = $('.js-signup-form input');
