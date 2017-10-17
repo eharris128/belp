@@ -93,6 +93,7 @@ function stateRender(state) {
     $('.js-login-page').removeClass('hidden');
     $('.js-signup-form').removeClass('hidden');
     $('.js-beer-form').addClass('hidden');
+    $('.js-info').addClass('hidden');
     $('.js-previousUserLoggedIn').addClass('hidden');
         $('.js-info').addClass('hidden');
     $('.js-results').addClass('hidden');
@@ -150,6 +151,7 @@ function stateRender(state) {
   }
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
+    $('.js-info').removeClass('hidden');
     $('.js-starter-page').addClass('hidden');
     $('.js-info').removeClass('hidden');
   }
@@ -252,11 +254,11 @@ function userLogout() {
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
   $('.js-show-results-button').addClass('hidden');
+  // $('.js-logout').addClass('hidden');
   $('.js-demo').removeClass('hidden');
 }
 
 function loginUser(userData) {
-  console.log('Lets login', userData);
   const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
     headers: {
