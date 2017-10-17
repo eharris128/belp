@@ -93,6 +93,7 @@ function stateRender(state) {
     $('.js-login-page').removeClass('hidden');
     $('.js-signup-form').removeClass('hidden');
     $('.js-beer-form').addClass('hidden');
+    $('.js-info').addClass('hidden');
     $('.js-previousUserLoggedIn').addClass('hidden');
     $('.js-results').addClass('hidden');
     $('.js-logout-button').addClass('hidden');
@@ -128,7 +129,7 @@ function stateRender(state) {
     <p> Brewery: ${beerData.brewery}</p>
     <h3> Reviews: </h3>
     <ul> ${beerList} </ul>
-    <button class="js-review" type="button"> Click to leave a review </button>
+    <button class="button js-review" type="button"> Click to leave a review </button>
     `;
 
     $('.js-results').html(beerInfoTemplate).removeClass('hidden');
@@ -147,6 +148,7 @@ function stateRender(state) {
   }
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
+    $('.js-info').removeClass('hidden');
     $('.js-starter-page').addClass('hidden');
   }
 }
@@ -248,11 +250,11 @@ function userLogout() {
   appState.previousUserLoggedIn = false;
   appState.userLoggedOut = true;
   $('.js-show-results-button').addClass('hidden');
+  // $('.js-logout').addClass('hidden');
   $('.js-demo').removeClass('hidden');
 }
 
 function loginUser(userData) {
-  console.log('Lets login', userData);
   const loginHash = btoa(userData.username + ':' + userData.password);
   const opts = {
     headers: {
