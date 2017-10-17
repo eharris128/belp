@@ -66,11 +66,7 @@ body {
 } */
 
 .results {
-<<<<<<< HEAD
   margin-top: 3rem;
-=======
-   margin-top: 3rem; 
->>>>>>> 187271e1013fb2475bf821d0a5eee69fdc6267ad
 }
 
 .sign-up {
@@ -109,10 +105,6 @@ ul {
   visibility: hidden;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 187271e1013fb2475bf821d0a5eee69fdc6267ad
 .demo {
   margin: 2rem 1rem 0 0;
 }
@@ -128,21 +120,10 @@ h1 {
   padding-left: 1rem;
 }
 
-<<<<<<< HEAD
 .button {
   background-color: #b4651a;
   border: none;
   color: #1e1e24;
-=======
-h2 {
-  margin-top: 0;
-}
-
-.button {
-  background-color: #B4651A;
-  border: none;
-  color: #1E1E24;
->>>>>>> 187271e1013fb2475bf821d0a5eee69fdc6267ad
   padding: 0.7rem 1.5rem;
   text-align: center;
   text-decoration: none;
@@ -150,25 +131,6 @@ h2 {
   font-weight: 600;
 }
 
-<<<<<<< HEAD
-=======
-.logout-button, .demo{
-  background-color: #f7ebe8;
-  border: none;
-  color: #1E1E24;
-  padding: 0.7rem 1.5rem;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-weight: 600;
-}
-
-.button:hover, .logout-button:hover, .demo:hover {
-  border: 2px solid #1E1E24;
-  
-}
-
->>>>>>> 187271e1013fb2475bf821d0a5eee69fdc6267ad
 @media (min-width: 500px) {
   .header {
     height: 5rem;
