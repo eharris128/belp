@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.css">
+    <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Open+Sans" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="index.css">
     <title>Belp - Beer Descriptions and Reviews</title>
 </head>
@@ -14,10 +15,10 @@
 
 
     <header class="header">
-        <h1>Belp - Beer Reviews By Beer Lovers</h1>
+        <h1>Belp <span class="minified-header">- Beer Reviews By Beer Lovers</span></h1>
+        <button class="js-demo demo">Demo</button>
     </header>
     <main role="main">
-        <button class="js-demo">Demo</button>
         <div class="login-page js-login-page">
             <h2 class="login">Login</h2>
             <form action="#" id="login-form" name="login" method="post" class="js-login-form">
@@ -31,21 +32,21 @@
             </form>
         </div>
         <div class="container starter-page js-starter-page">
-                <h2 class="sign-up js-signup-message">Sign up to start searching for your favorite beer</h2>
-                <form action="#" id="signup-form" name="signup" method="post" class="js-signup-form">
-                    <fieldset>
-                        <label class="input-label" for="username">Username</label>
-                        <input class="input-box" type="text" name="username" id="username" required placeholder="myuser123">
-                        <label class="input-label" for="password">Password</label>
-                        <input class="input-box" type="password" name="password" id="password" required placeholder="A password">
-                        <label class="input-label" for="firstName">First Name</label>
-                        <input class="input-box" type="text" name="firstName" id="firstName" required placeholder="Jane">
-                        <label class="input-label" for="lastName">Last Name</label>
-                        <input class="input-box" type="text" name="lastName" id="lastName" required placeholder="Doe">
-                    </fieldset>
-                    <button class="button submit-button" type="submit">Sign up</button>
-                </form>
-                <div class="js-login-error hidden"> </div>
+            <h2 class="sign-up js-signup-message">Sign up to search for reviews of your favorite beer, or to leave reviews for all the beers you especially enjoy!</h2>
+            <form action="#" id="signup-form" name="signup" method="post" class="js-signup-form">
+                <fieldset>
+                    <label class="input-label" for="username">Username</label>
+                    <input class="input-box" type="text" name="username" id="username" required placeholder="myuser123">
+                    <label class="input-label" for="password">Password</label>
+                    <input class="input-box" type="password" name="password" id="password" required placeholder="A password">
+                    <label class="input-label" for="firstName">First Name</label>
+                    <input class="input-box" type="text" name="firstName" id="firstName" required placeholder="Jane">
+                    <label class="input-label" for="lastName">Last Name</label>
+                    <input class="input-box" type="text" name="lastName" id="lastName" required placeholder="Doe">
+                </fieldset>
+                <button class="button submit-button" type="submit">Sign up</button>
+            </form>
+            <div class="js-login-error hidden"> </div>
             <h2 class="js-previousUserLoggedIn hidden"> You are logged in. Please search for beers you want to learn about and leave a review for others to see.</h2>
             <h2 class="js-loggedIn hidden">You have successfully created an account and logged in!! <br>You may now search for beer.</h2>
             <button class="js-show-results-button button hidden">Click to proceed to search engine.</button>
@@ -57,13 +58,13 @@
             </fieldset>
             <button class="button submit-button" type="submit">Submit Beer Search</button>
         </form>
-
+        <p class="js-info info">
+            The database is currently seeded with the sample beers: "Keystone" and "Budweiser"
+        </p>
         <div class="js-results results hidden">
-            <p>
-                Some Beer Data:
-            </p>
         </div>
-        <button class="button logout-button js-logout-button hidden" type="button">Logout</button>
+         <button class="hidden logout-button js-logout-button" type="button">Logout</button> 
+         <!-- <button class="hidden button logout-button js-logout-button" type="button">Logout</button>  -->
     </main>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

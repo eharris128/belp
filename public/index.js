@@ -94,6 +94,7 @@ function stateRender(state) {
     $('.js-signup-form').removeClass('hidden');
     $('.js-beer-form').addClass('hidden');
     $('.js-previousUserLoggedIn').addClass('hidden');
+        $('.js-info').addClass('hidden');
     $('.js-results').addClass('hidden');
     $('.js-logout-button').addClass('hidden');
   }
@@ -128,15 +129,17 @@ function stateRender(state) {
     <p> Brewery: ${beerData.brewery}</p>
     <h3> Reviews: </h3>
     <ul> ${beerList} </ul>
-    <button class="js-review" type="button"> Click to leave a review </button>
+    <button class="js-review button" type="button"> Click to leave a review </button>
     `;
 
     $('.js-results').html(beerInfoTemplate).removeClass('hidden');
   } else if (loggedIn) {
+    console.log("This is being executed?");
     $('.js-loggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
     $('.js-logout-button').removeClass('hidden');
   } else if (previousUserLoggedIn) {
+        console.log("Or this is being executed?");
     $('.js-starter-page').removeClass('hidden');
     $('.js-previousUserLoggedIn').removeClass('hidden');
     $('.js-show-results-button').removeClass('hidden');
@@ -148,6 +151,7 @@ function stateRender(state) {
   if (state.showSearchForm) {
     $('.js-beer-form').removeClass('hidden');
     $('.js-starter-page').addClass('hidden');
+    $('.js-info').removeClass('hidden');
   }
 }
 
