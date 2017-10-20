@@ -1,8 +1,8 @@
 # Belp
 This app is made for the beer lovers to express whet they believe, feel, experience, and love when they need to let the world know about the very sustance that improves and and chaanges the world around us. 
-
+ 
 ## Description <br/> 
-This App was brainstormed up while we, as students, sat in a slack channel waiting for a response on a heavy request day, but not really knowing when a response would come, or what our standing was. Enter in Tick-it, the web app that allows Thinkful TA's and students to stay organized on a transparent platform. TA's are able to keep track of requests submitted by students who need assistance with a variety of coding challenges, while students are able to keep track of the requests they have submitted and where they line up on the queue. 
+Users are able to post reviews, read other users' reviews, and view beer information for all of the beers populated in the database. 
 
 ## Technology Used <br/>
 **FrontEnd**: HTML, CSS, Javascript<br/>
@@ -42,7 +42,6 @@ This App was brainstormed up while we, as students, sat in a slack channel waiti
 * Run `npm start` in the terminal => to run the client and backend server
     * Starts a server running at http://localhost:8080
 
-
 ## Contributing 
 
 * Please refer to [contributing.md](/contributing.md)
@@ -59,5 +58,3 @@ This App was brainstormed up while we, as students, sat in a slack channel waiti
 * Thanks to Chris for helping to teach us the back-end mechanics these past few weeks, hope all is well for you in the future
 * Thanks to Elias, Joshua, and Sidharthchugh for all of their guidance and assistance to help improve our code.
 * Thanks to cohort 12 for being so supportive 
-
-
